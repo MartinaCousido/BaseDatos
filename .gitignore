@@ -1,0 +1,27 @@
+# Archivo de secretos y variables de entorno
+.env
+
+# Directorio de dependencias de Node.js.
+# Se puede regenerar en cualquier momento ejecutando "npm install".
+node_modules/
+package-lock.json
+
+# Logs de NPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Archivos de configuración y metadata de editores e IDEs
+# JetBrains (WebStorm, IntelliJ IDEA, etc.)
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Archivos del sistema operativo
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db

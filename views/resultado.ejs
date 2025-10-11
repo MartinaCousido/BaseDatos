@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resultado de la Búsqueda</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<h1>Resultado de la Búsqueda</h1>
+<% if (movies.length === 0) { %>
+    <p>No hay resultados.</p>
+<% } else { %>
+    <ul>
+        <% movies.forEach((movie) => { %>
+            <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %></a></li>
+        <% }); %>
+    </ul>
+<% } %>
+<p></p>
+<div id="inicio"><a href="/">Inicio</a></div>
+</body>
+</html>

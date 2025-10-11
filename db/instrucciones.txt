@@ -1,0 +1,14 @@
+-- Instrucciones para crear tablas y datos en la base de datos "movies"
+
+-- La base de datos "movies" debe existir: crearla previamente usando pgadmin o la consola.
+
+-- Abrir cmd or PowerShell (MacOS: terminal).
+-- Cambiar al directorio donde están los scripts.
+-- Abrir la consola de Postgres (pgsql) y ejecutar:
+
+chcp 65001
+set PGCLIENTENCODING=UTF8
+
+-- Cerrar la consola y ejecutar:
+
+psql --single-transaction -d movies -U postgres -f 00_load_all.sql

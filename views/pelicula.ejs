@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= movie.title %></title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<%
+// --- LÓGICA PARA FORMATEAR LA FECHA ---
+// 1. Creamos un array con los nombres de los meses en español
+const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+// 2. 'movie.release_date' ya es un objeto Date
+const date = new Date(movie.release_date);
+
+// 3. Extraer las partes de la fecha
+const day = date.getDate();
+const month = monthNames[date.getMonth()]; // getMonth() es 0-11
+const year = date.getFullYear();
+
+// 4. String con el formato final
+const formattedDate = `${day}-${month}-${year}`;
+%>
+
+<h1><%= movie.title %></h1>
+<p><strong>Fecha:</strong> <%= formattedDate %></p>
+<h3>Directores</h3>
+<ul>
+    <% movie.directors.forEach((director) => { %>
+        <li>
+            <a href="/director/<%= director.crew_member_id %>"><%= director.crew_member_name %></a>
+        </li>
+    <% }); %>
+</ul>
+<h3>Escritores</h3>
+<ul>
+    <% movie.writers.forEach((writer) => { %>
+        <li>
+            <%= writer.crew_member_name %>
+        </li>
+    <% }); %>
+</ul>
+<h3>Argumento</h3>
+<div id="overview"><p><%= movie.overview %></p></div>
+<h3>Elenco</h3>
+<ul>
+    <% movie.cast.sort((a, b) => a.cast_order - b.cast_order).forEach((actor) => { %>
+        <li><a href="/actor/<%= actor.actor_id %>"><%= actor.actor_name %></a> - <%= actor.character_name %></li>
+    <% }); %>
+</ul>
+<h3>Equipo técnico</h3>
+<ul>
+    <% movie.crew.forEach((crewMember) => { %>
+        <li>
+            <%= crewMember.crew_member_name %> - <%= crewMember.department_name %>
+            (<%= crewMember.job %>)
+        </li>
+    <% }); %>
+</ul>
+<p></p>
+<div id="inicio"><a href="/">Inicio</a></div>
+</body>
+</html>
