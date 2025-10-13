@@ -41,30 +41,25 @@ app.get('/', (req, res) => {
 // Ruta para buscar películas en la base de datos PostgreSQL
 app.get('/buscar', async (req, res) => { // 4. Convertir a función async
     const searchTerm = req.query.q;
-    const limit = 50;
+    const limit = 20;
 
     // Los placeholders en pg son $1, $2, etc.
-    const query_movies = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const query_movies_tag = 'SELECT * FROM movie WHERE tagline ILIKE $1 LIMIT ' + String(limit);
-    const query_person = 'SELECT * FROM person WHERE person_name ILIKE $1 LIMIT ' + String(limit);
-    const values = [`${searchTerm}%`];
-    const values_1 = [`%${searchTerm}%`];
+    const query_mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
+    const query_mcontains = 'SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
+    const query_pstart = 'SELECT * FROM person WHERE person_name ILIKE $1 LIMIT ' + String(limit);
+    const query_pcontains = 'SELECT * FROM person WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 LIMIT ' + String(limit);
+    const s_values = [`${searchTerm}%`];
+    const c_values = [`%${searchTerm}%`, `${searchTerm}%`];
 
     try {
-        // Usar db.query que devuelve una promesa y acceder a .rows
-        const result_movies = await db.query(query_movies, values);
-        const result_person = await db.query(query_person, values);
-        
-        const result_movies_1 = await db.query(query_movies, values_1);
-        const result_person_1 = await db.query(query_person, values_1);
-    
-        // agrego las que no estan
-        const filtred_m = result_movies_1.rows.filter((movie) => !movie in result_movies.rows)
-        const filtred_p = result_person_1.rows.filter((person) => !person in result_person.rows)
+        const result_mstart = await db.query(query_mstart, s_values);
+        const result_mcontains = await db.query(query_mcontains, c_values);
+        const result_pstart = await db.query(query_pstart, s_values);
+        const result_pcontains = await db.query(query_pcontains, c_values)
 
         res.render('resultado', { 
-            movies: result_movies.rows.concat(filtred_m),
-            persons: result_person.rows.concat(filtred_p),
+            movies: result_mstart.rows.concat(result_mcontains.rows),
+            persons: result_pstart.rows.concat(result_pcontains.rows),
         });
 
     } catch (err) {
