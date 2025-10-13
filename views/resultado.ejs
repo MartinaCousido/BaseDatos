@@ -1,102 +1,141 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Resultado de la Búsqueda</title>
     <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/index.css" />
-</head>
-<body class="page-content">
-    
+  </head>
+  <body class="page-content">
     <nav class="navbar visible">
-        <div class="nav-container">
-            <a href="/" class="nav-brand">The Movies</a>
-            <div class="nav-filters">
-                <a href="#">Acción</a>
-                <a href="#">Comedia</a>
-                <a href="#">Drama</a>
-                <a href="#">Terror</a>
-            </div>
-            <form class="nav-search" action="/buscar" method="GET">
-                <input type="text" name="q" value="<%= toSearch %>" placeholder="Buscar películas..." />
-                <button type="submit">Buscar</button>
-            </form>
+      <div class="nav-container">
+        <a href="/" class="nav-brand">The Movies</a>
+        <div class="nav-filters">
+          <a href="#">Acción</a>
+          <a href="#">Comedia</a>
+          <a href="#">Drama</a>
+          <a href="#">Terror</a>
         </div>
+        <form class="nav-search" action="/buscar" method="GET">
+          <input
+            type="text"
+            name="q"
+            value="<%= toSearch %>"
+            placeholder="Buscar películas..."
+          />
+          <button type="submit">Buscar</button>
+        </form>
+      </div>
     </nav>
 
     <h1>Looking for "<%= toSearch %>"</h1>
 
     <div class="tabs-container">
-        <div class="tab-nav">
-            <button class="tab-button active" data-tab="peliculas">Películas (<%= movies.length %>)</button>
-            <button class="tab-button" data-tab="actores">Actores (<%= actors.length %>)</button>
-            <button class="tab-button" data-tab="directores">Directores (0)</button> </div>
+      <div class="tab-nav">
+        <button class="tab-button active" data-tab="peliculas">
+          Películas (<%= movies.length %>)
+        </button>
+        <button class="tab-button" data-tab="actores">
+          Actores (<%= actors.length %>)
+        </button>
+        <button class="tab-button" data-tab="directores">
+          Directores (<%= directors.length %>)
+        </button>
+      </div>
 
-        <div class="tab-content">
-            <div id="peliculas-panel" class="tab-panel active">
-                <% if (movies.length === 0) { %>
-                    <p class="no-results">No se encontraron películas.</p>
-                <% } else { %>
-                    <div class="results-grid">
-                        <% movies.forEach((movie) => { %>
-                            <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
-                                <img class="card-img" src="/imgs/poster.jpg" alt="Poster de <%= movie.title %>" />
-                                <div class="card-info">
-                                    <h3 class="card-title"><%= movie.title %></h3>
-                                    <span class="card-tagline"><%= movie.tagline %></span>
-                                </div>
-                            </a>
-                        <% }); %>
-                    </div>
-                    <div class="ver-mas-container">
-                        <button class="ver-mas-btn">Ver más</button>
-                    </div>
-                <% } %>
-            </div>
-
-            <div id="actores-panel" class="tab-panel">
-                <% if (actors.length === 0) { %>
-                    <p class="no-results">No se encontraron actores.</p>
-                <% } else { %>
-                    <div class="results-grid">
-                        <% actors.forEach((actor) => { %>
-                            <a href="/actor/<%= actor.person_id %>" class="result-card">
-                                <img class="card-img" src="/imgs/Tom_Hanks.jpg" alt="Foto de <%= actor.person_name %>" />
-                                <div class="card-info">
-                                    <h3 class="card-title"><%= actor.person_name %></h3>
-                                </div>
-                            </a>
-                        <% }); %>
-                    </div>
-                    <div class="ver-mas-container">
-                        <button class="ver-mas-btn">Ver más</button>
-                    </div>
-                <% } %>
-            </div>
-
-            <div id="directores-panel" class="tab-panel">
-                <p class="no-results">La búsqueda de directores aún no está implementada.</p>
-            </div>
+      <div class="tab-content">
+        <div id="peliculas-panel" class="tab-panel active">
+          <% if (movies.length === 0) { %>
+          <p class="no-results">No se encontraron películas.</p>
+          <% } else { %>
+          <div class="results-grid">
+            <% movies.forEach((movie) => { %>
+            <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
+              <img
+                class="card-img"
+                src="/imgs/poster.jpg"
+                alt="Poster de <%= movie.title %>"
+              />
+              <div class="card-info">
+                <h3 class="card-title"><%= movie.title %></h3>
+                <span class="card-tagline"><%= movie.tagline %></span>
+              </div>
+            </a>
+            <% }); %>
+          </div>
+          <div class="ver-mas-container">
+            <button class="ver-mas-btn">Ver más</button>
+          </div>
+          <% } %>
         </div>
+
+        <div id="actores-panel" class="tab-panel">
+          <% if (actors.length === 0) { %>
+          <p class="no-results">No se encontraron actores.</p>
+          <% } else { %>
+          <div class="results-grid">
+            <% actors.forEach((actor) => { %>
+            <a href="/actor/<%= actor.person_id %>" class="result-card">
+              <img
+                class="card-img"
+                src="/imgs/Tom_Hanks.jpg"
+                alt="Foto de <%= actor.person_name %>"
+              />
+              <div class="card-info">
+                <h3 class="card-title"><%= actor.person_name %></h3>
+              </div>
+            </a>
+            <% }); %>
+          </div>
+          <div class="ver-mas-container">
+            <button class="ver-mas-btn">Ver más</button>
+          </div>
+          <% } %>
+        </div>
+
+        <div id="directores-panel" class="tab-panel">
+          <% if (directors.length === 0) { %>
+          <p class="no-results">No se encontraron directores.</p>
+          <% } else { %>
+          <div class="results-grid">
+            <% directors.forEach((director) => { %>
+            <a href="/director/<%= director.person_id %>" class="result-card">
+              <img
+                class="card-img"
+                src="/imgs/Tom_Hanks.jpg"
+                alt="Foto de <%= director.person_name %>"
+              />
+              <div class="card-info">
+                <h3 class="card-title"><%= director.person_name %></h3>
+              </div>
+            </a>
+            <% }); %>
+          </div>
+          <div class="ver-mas-container">
+            <button class="ver-mas-btn">Ver más</button>
+          </div>
+          <% } %>
+        </div>
+      </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabPanels = document.querySelectorAll('.tab-panel');
+      document.addEventListener("DOMContentLoaded", () => {
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const tabPanels = document.querySelectorAll(".tab-panel");
 
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Quitar 'active' de todos los botones y paneles
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabPanels.forEach(panel => panel.classList.remove('active'));
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            // Quitar 'active' de todos los botones y paneles
+            tabButtons.forEach((btn) => btn.classList.remove("active"));
+            tabPanels.forEach((panel) => panel.classList.remove("active"));
 
-                    // Añadir 'active' al botón clickeado y al panel correspondiente
-                    button.classList.add('active');
-                    const targetPanelId = button.dataset.tab + '-panel';
-                    document.getElementById(targetPanelId).classList.add('active');
-                });
-            });
+            // Añadir 'active' al botón clickeado y al panel correspondiente
+            button.classList.add("active");
+            const targetPanelId = button.dataset.tab + "-panel";
+            document.getElementById(targetPanelId).classList.add("active");
+          });
         });
+      });
     </script>
-</body>
+  </body>
 </html>

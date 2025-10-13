@@ -80,6 +80,36 @@ async function getFormatedActorsForSearchValue(toSearch, limit = 50) {
     }
 }
 
+async function getFormatedDirectorsForSearchValue(toSearch, limit = 50) {
+    const start = 
+    `select distinct person_name, person.person_id
+    from person
+    left join movie_crew as mc on person.person_id = mc.person_id
+    where job ilike '%director%' and person.person_name ilike $1
+    limit ${limit}`;
+
+    const contains = 
+    `select distinct person_name, person.person_id
+    from person
+    left join movie_crew as mc on person.person_id = mc.person_id
+    where job ilike '%director%' and person.person_name ilike $1 and NOT person.person_name ILIKE $2
+    limit ${limit}`;
+
+    const s_values = [`${toSearch}%`];
+    const c_values = [`%${toSearch}%`, `${toSearch}%`];
+
+    try{
+        const response = await db.query(start, s_values);
+        const response_c = await db.query(contains, c_values);
+
+        return response.rows.concat(response_c.rows);
+
+    }catch(error) {
+        console.log(error);
+        return [];
+    }
+}
+
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
@@ -94,13 +124,15 @@ app.get('/buscar', async (req, res) => { // 4. Convertir a función async
     const limit = 100;
 
     try {
-        const response = await getFormatedMoviesForSearchValue(searchTerm);
-        const response_actor = await getFormatedActorsForSearchValue(searchTerm);
+        const response_movies = await getFormatedMoviesForSearchValue(searchTerm);
+        const response_actors = await getFormatedActorsForSearchValue(searchTerm);
+        const response_directors = await getFormatedDirectorsForSearchValue(searchTerm);
 
         res.render('resultado', { 
             toSearch: searchTerm,
-            movies: response,
-            actors: response_actor,
+            movies: response_movies,
+            actors: response_actors,
+            directors: response_directors,
         });
 
     } catch (err) {
@@ -247,12 +279,12 @@ app.get('/director/:id', async (req, res) => {
     const directorId = req.params.id;
     try {
         // Consulta: obtener nombre del director y las películas que dirigió
-        const directorResult = await db.query('SELECT name FROM person WHERE person_id = $1', [directorId]);
+        const directorResult = await db.query('SELECT person_name FROM person WHERE person_id = $1', [directorId]);
         const moviesResult = await db.query(`
             SELECT m.movie_id, m.title, m.release_date
-            FROM movie m
-            JOIN movie_directors md ON m.movie_id = md.movie_id
-            WHERE md.person_id = $1
+            from movie_crew as mc
+            left join movie as m on m.movie_id = mc.movie_id
+            where job ilike '%director%' and mc.person_id = $1
         `, [directorId]);
 
         const directorName = directorResult.rows[0]?.person_name || 'Director desconocido';
