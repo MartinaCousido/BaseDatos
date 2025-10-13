@@ -1,23 +1,23 @@
 /* === ESTILOS GENERALES (Consistentes en todo el sitio) === */
 body {
     /* Mantenemos la paleta de colores y la fuente del sitio */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #3a3a3a; /* Fondo gris medio */
-    color: #ffffff;           /* Texto principal blanco */
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #141414; /* Fondo oscuro principal */
+    color: #f5f5f5;           /* Texto principal claro */
     margin: 0;
     padding: 0;
 }
 
 a {
-    /* Los enlaces son blancos que resaltan a amarillo al pasar el mouse */
+    /* Los enlaces son de un color claro que resalta al pasar el mouse */
     text-decoration: none;
-    color: #ffffff;
+    color: #e0e0e0;
     font-weight: bold;
     transition: color 0.2s;
 }
 
 a:hover {
-    color: #FFC107;
+    color: #ffffff;
 }
 
 ul {
@@ -44,10 +44,9 @@ li {
 
 h1 {
     font-size: 3rem; /* Título grande y llamativo */
-    color: #FFC107; /* Amarillo para títulos */
+    color: #E50914; /* Usamos el color rojo de la marca */
     margin-bottom: 20px;
     text-align: center;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 
@@ -58,9 +57,9 @@ h1 {
     user-select: none;
     padding: 15px 20px;
     width: 100%;
-    /* El botón usa el color amarillo */
-    background-color: #FFC107;
-    color: #2a2a2a;
+    /* El botón usa el color de acento principal */
+    background-color: #E50914;
+    color: white;
     font-size: 1.1rem;
     font-weight: bold;
     border: none;
@@ -70,19 +69,18 @@ h1 {
 }
 
 .collapsible:hover {
-    background-color: #FFD54F; /* Un amarillo más brillante */
+    background-color: #f6121d; /* Un rojo un poco más brillante */
 }
 
 .content {
     /* El contenido del colapsable tiene un fondo más sutil */
     display: none;
     padding: 20px;
-    background-color: #4a4a4a; /* Un gris más claro */
-    border: 1px solid #555;
+    background-color: #222; /* Un gris oscuro, no negro puro */
+    border: 1px solid #333;
     border-top: none; /* Quitamos el borde superior para que se una al botón */
     border-radius: 0 0 4px 4px;
     margin-bottom: 10px;
-    color: #ffffff;
 }
 
 /* Esta clase no necesita cambios, solo controla la visibilidad */
@@ -106,8 +104,8 @@ h1 {
 /* Títulos para cada sección de resultados (Películas, Personas, etc.) */
 .results-header {
     font-size: 2.5rem;
-    color: #ffffff;
-    border-bottom: 3px solid #FFC107; /* Línea amarilla de acento */
+    color: #f5f5f5;
+    border-bottom: 3px solid #E50914; /* Línea roja de acento */
     padding-bottom: 10px;
     margin-bottom: 30px;
     margin-top: 40px; /* Espacio entre secciones */
@@ -115,10 +113,10 @@ h1 {
 
 /* Mensaje cuando no se encuentran resultados */
 .no-results {
-    background-color: #4a4a4a;
+    background-color: #222;
     padding: 20px;
     border-radius: 8px;
-    color: #e0e0e0;
+    color: #aaa;
     text-align: center;
     font-size: 1.1rem;
 }
@@ -133,11 +131,11 @@ h1 {
 
 /* Estilo de cada tarjeta individual */
 .result-card {
-    background-color: #4a4a4a; /* Un gris más claro */
-    border: 1px solid #555;
+    background-color: #1f1f1f; /* Un gris oscuro, ligeramente diferente al fondo */
+    border: 1px solid #333;
     border-radius: 8px;
     text-decoration: none; /* Quitamos el subrayado del link */
-    color: #ffffff;
+    color: #f5f5f5;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra sutil inicial */
     display: flex;
     flex-direction: column;
@@ -152,21 +150,21 @@ h1 {
     /* Mueve la tarjeta 10px hacia arriba */
     transform: translateY(-10px);
     /* Aumenta la sombra para dar la sensación de que está "flotando" */
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
-    border-color: #FFC107; /* Resaltamos el borde con amarillo */
+    box-shadow: 0 12px 24px rgba(255, 50, 50, 0.5);
+    border-color: #E50914; /* Resaltamos el borde con el color de la marca */
 }
 
 /* Título dentro de la tarjeta */
 .card-title {
     font-size: 1.4rem;
-    color: #FFC107; /* Título en amarillo */
+    color: #E50914; /* Título en rojo */
     margin: 0 0 10px 0;
 }
 
 /* Pequeño subtítulo para indicar el tipo de resultado */
 .card-type {
-    font-size: 0.9rem;
-    color: #e0e0e0;
+    font-size: 0.6rem;
+    color: #aaa;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -185,176 +183,4 @@ h1 {
 
 .card-info {
     padding: 10px;
-}
-/* === ESTILOS PARA LA PÁGINA DE DETALLES DE PELÍCULA === */
-
-/* Contenedor principal */
-.movie-details {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 120px 40px 40px 40px;
-}
-
-/* Título de la película */
-.movie-title {
-    font-size: 3.5rem;
-    color: #FFC107;
-    text-align: center;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
-    font-weight: bold;
-}
-
-/* Fecha de estreno */
-.movie-date {
-    text-align: center;
-    font-size: 1.2rem;
-    color: #e0e0e0;
-    margin-bottom: 40px;
-}
-
-.movie-date strong {
-    color: #FFC107;
-}
-
-/* Grid para organizar la información en secciones */
-.movie-info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-bottom: 40px;
-}
-
-/* Sección individual (Directores, Escritores, etc.) */
-.info-section {
-    background-color: #4a4a4a;
-    padding: 25px;
-    border-radius: 12px;
-    border-left: 4px solid #FFC107;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.info-section h3 {
-    color: #FFC107;
-    font-size: 1.5rem;
-    margin: 0 0 15px 0;
-    border-bottom: 2px solid #555;
-    padding-bottom: 10px;
-}
-
-.info-section p {
-    color: #ffffff;
-    font-size: 1.1rem;
-    margin: 8px 0;
-    line-height: 1.6;
-}
-
-/* Sección del argumento (ocupa todo el ancho) */
-.synopsis-section {
-    background-color: #4a4a4a;
-    padding: 30px;
-    border-radius: 12px;
-    border-left: 4px solid #FFC107;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    margin-bottom: 40px;
-}
-
-.synopsis-section h3 {
-    color: #FFC107;
-    font-size: 1.8rem;
-    margin: 0 0 20px 0;
-    border-bottom: 2px solid #555;
-    padding-bottom: 10px;
-}
-
-.synopsis-section p {
-    color: #ffffff;
-    font-size: 1.2rem;
-    line-height: 1.8;
-    text-align: justify;
-}
-
-/* Sección del elenco */
-.cast-section {
-    background-color: #4a4a4a;
-    padding: 30px;
-    border-radius: 12px;
-    border-left: 4px solid #FFC107;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    margin-bottom: 40px;
-}
-
-.cast-section h3 {
-    color: #FFC107;
-    font-size: 1.8rem;
-    margin: 0 0 20px 0;
-    border-bottom: 2px solid #555;
-    padding-bottom: 10px;
-}
-
-.cast-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
-}
-
-.cast-item {
-    background-color: #3a3a3a;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #555;
-    transition: all 0.3s ease;
-}
-
-.cast-item:hover {
-    transform: translateY(-5px);
-    border-color: #FFC107;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-}
-
-.cast-item strong {
-    color: #FFC107;
-    font-size: 1.1rem;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.cast-item span {
-    color: #e0e0e0;
-    font-size: 0.95rem;
-}
-
-/* Botón de volver al inicio */
-.back-button {
-    display: inline-block;
-    background-color: #FFC107;
-    color: #2a2a2a;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    margin-top: 20px;
-}
-
-.back-button:hover {
-    background-color: #FFD54F;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4);
-}
-
-/* Responsive para pantallas pequeñas */
-@media (max-width: 768px) {
-    .movie-info-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .movie-title {
-        font-size: 2.5rem;
-    }
-    
-    .cast-list {
-        grid-template-columns: 1fr;
-    }
 }
