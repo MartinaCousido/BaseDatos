@@ -31,8 +31,8 @@ const db = new Pool({
 });
 
 async function getFormatedMoviesForSearchValue(toSearch, limit = 50 ) {
-    const mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const mcontains = 'SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
+    const mstart = 'SELECT * FROM movie WHERE title ILIKE $1';// LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
+    const mcontains = `SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2`;// LIMIT + String(limit); // ILIKE es case-insensitive en Postgres
 
     const s_values = [`${toSearch}%`];
     const c_values = [`%${toSearch}%`, `${toSearch}%`];
@@ -55,15 +55,15 @@ async function getFormatedActorsForSearchValue(toSearch, limit = 50) {
     `SELECT DISTINCT person_name, person.person_id 
     FROM person 
     left join movie_cast as mc on person.person_id = mc.person_id 
-    WHERE person_name ILIKE $1 AND character_name IS NOT NULL
-    LIMIT ${String(limit)}`;
+    WHERE person_name ILIKE $1 AND character_name IS NOT NULL`;
+    // LIMIT ${String(limit)}`;
 
     const acontains = 
     `SELECT DISTINCT person_name, person.person_id
     FROM person 
     left join movie_cast as mc on person.person_id = mc.person_id 
-    WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 AND character_name IS NOT NULL
-    LIMIT ${String(limit)}`;
+    WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 AND character_name IS NOT NULL`;
+    // LIMIT ${String(limit)}`;
 
     const s_values = [`${toSearch}%`];
     const c_values = [`%${toSearch}%`, `${toSearch}%`];
@@ -92,8 +92,8 @@ async function getFormatedDirectorsForSearchValue(toSearch, limit = 50) {
     `select distinct person_name, person.person_id
     from person
     left join movie_crew as mc on person.person_id = mc.person_id
-    where job ilike '%director%' and person.person_name ilike $1 and NOT person.person_name ILIKE $2
-    limit ${limit}`;
+    where job ilike '%director%' and person.person_name ilike $1 and NOT person.person_name ILIKE $2`;
+    // limit ${limit}`;
 
     const s_values = [`${toSearch}%`];
     const c_values = [`%${toSearch}%`, `${toSearch}%`];
