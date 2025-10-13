@@ -51,8 +51,19 @@ async function getFormatedMoviesForSearchValue(toSearch, limit = 50 ) {
 
 async function getFormatedActorsForSearchValue(toSearch, limit = 50) {
 
-    const astart = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 LIMIT ' + String(limit);
-    const acontains = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 LIMIT ' + String(limit);
+    const astart = 
+    `SELECT DISTINCT person_name, person.person_id 
+    FROM person 
+    left join movie_cast as mc on person.person_id = mc.person_id 
+    WHERE person_name ILIKE $1 AND character_name IS NOT NULL
+    LIMIT ${String(limit)}`;
+
+    const acontains = 
+    `SELECT DISTINCT person_name, person.person_id
+    FROM person 
+    left join movie_cast as mc on person.person_id = mc.person_id 
+    WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 AND character_name IS NOT NULL
+    LIMIT ${String(limit)}`;
 
     const s_values = [`${toSearch}%`];
     const c_values = [`%${toSearch}%`, `${toSearch}%`];
