@@ -303,3 +303,83 @@ h1 {
         grid-template-columns: 1fr;
     }
 }
+
+/* === ESTILOS PARA EL SISTEMA DE PESTAÑAS (TABS) === */
+
+.tabs-container {
+    width: 100%;
+    margin-top: 40px;
+}
+
+/* Barra de navegación de las pestañas */
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid rgba(255, 193, 7, 0.5); /* Línea divisoria */
+    margin-bottom: 30px;
+}
+
+.tab-button {
+    padding: 15px 25px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border-bottom: 4px solid transparent; /* Borde inferior invisible por defecto */
+    color: #e0e0e0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-bottom: -2px; /* Alinea el borde inferior con la línea divisoria */
+}
+
+.tab-button:hover {
+    background-color: #4a4a4a;
+    color: #ffffff;
+}
+
+/* Estilo para la pestaña ACTIVA */
+.tab-button.active {
+    color: #FFC107; /* Color amarillo de acento */
+    border-bottom-color: #FFC107;/* El borde inferior se hace visible y amarillo */
+}
+
+/* Paneles individuales (películas, actores, etc.) */
+.tab-panel {
+    display: none; /* Ocultos por defecto */
+    animation: fadeIn 0.5s; /* Pequeña animación de entrada */
+}
+
+/* Panel ACTIVO */
+.tab-panel.active {
+    display: block; /* Se hace visible */
+}
+
+/* Animación simple de fundido */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+/* === ESTILO PARA EL BOTÓN "VER MÁS" === */
+.ver-mas-container {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.ver-mas-btn {
+    background-color: #FFC107;
+    color: #2a2a2a;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ver-mas-btn:hover {
+    background-color: #FFD54F;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4);
+}
