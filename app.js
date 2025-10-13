@@ -214,7 +214,7 @@ app.get('/director/:id', async (req, res) => {
             WHERE md.person_id = $1
         `, [directorId]);
 
-        const directorName = directorResult.rows[0]?.name || 'Director desconocido';
+        const directorName = directorResult.rows[0]?.person_name || 'Director desconocido';
         const movies = moviesResult.rows;
 
         res.render('director', { directorName, movies });
