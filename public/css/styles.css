@@ -92,3 +92,78 @@ h1 {
   Es mejor usar la clase genérica ".page-content" para estructurar
   el contenido de tus páginas y mantener la consistencia.
 */
+/* === ESTILOS PARA LA PÁGINA DE RESULTADOS === */
+
+/* Contenedor principal para la página de resultados */
+.page-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 40px 40px 40px; /* Padding superior para no chocar con el navbar */
+}
+
+/* Títulos para cada sección de resultados (Películas, Personas, etc.) */
+.results-header {
+    font-size: 2.5rem;
+    color: #f5f5f5;
+    border-bottom: 3px solid #E50914; /* Línea roja de acento */
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    margin-top: 40px; /* Espacio entre secciones */
+}
+
+/* Mensaje cuando no se encuentran resultados */
+.no-results {
+    background-color: #222;
+    padding: 20px;
+    border-radius: 8px;
+    color: #aaa;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+/* La grilla que contendrá todas las tarjetas */
+.results-grid {
+    display: grid;
+    /* Crea columnas automáticas que miden mínimo 250px y máximo 1fr (lo que quepa) */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px; /* Espacio entre las tarjetas */
+}
+
+/* Estilo de cada tarjeta individual */
+.result-card {
+    background-color: #1f1f1f; /* Un gris oscuro, ligeramente diferente al fondo */
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    text-decoration: none; /* Quitamos el subrayado del link */
+    color: #f5f5f5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra sutil inicial */
+    
+    /* ✨ LA MAGIA DE LA ANIMACIÓN ✨ */
+    /* La transición se aplicará a las propiedades 'transform' y 'box-shadow' */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* El efecto cuando pasas el mouse por encima */
+.result-card:hover {
+    /* Mueve la tarjeta 10px hacia arriba */
+    transform: translateY(-10px);
+    /* Aumenta la sombra para dar la sensación de que está "flotando" */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+    border-color: #E50914; /* Resaltamos el borde con el color de la marca */
+}
+
+/* Título dentro de la tarjeta */
+.card-title {
+    font-size: 1.4rem;
+    color: #E50914; /* Título en rojo */
+    margin: 0 0 10px 0;
+}
+
+/* Pequeño subtítulo para indicar el tipo de resultado */
+.card-type {
+    font-size: 0.9rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
