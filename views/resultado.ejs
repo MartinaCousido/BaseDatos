@@ -17,10 +17,65 @@
         <img class="card-img" src="./imgs/poster.jpg" alt="" />
         <div class="card-info">
           <h3 class="card-title"><%= movie.title %></h3>
-          <span class="card-tagline"><%= movie.tagline %></span>
+          <p class="card-type">Película</p>
+        </a>
+        <% }); %>
+      </div>
+      <% } %>
+
+      <h2 class="results-header">Películas por Tag</h2>
+      <% if (tags.length === 0) { %>
+      <p class="no-results">No se encontraron películas con ese tag.</p>
+      <% } else { %>
+      <div class="results-grid">
+        <% tags.forEach((movie) => { %>
+        <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
+          <h3 class="card-title"><%= movie.title %></h3>
+          <p class="card-type">Película (Tag)</p>
+        </a>
+        <% }); %>
+      </div>
+      <% } %>
+
+      <h2 class="results-header">Personas</h2>
+      <% if (persons.length === 0) { %>
+        <p class="no-results">No se encontraron personas.</p>
+      <% } else { %>
+        <div class="results-grid">
+          <% persons.forEach((person) => { %>
+            <% if (person.job && person.job.toLowerCase().includes('actor')) { %>
+              <a href="/actor/<%= person.person_id %>" class="result-card">
+                <h3 class="card-title"><%= person.person_name %></h3>
+                <p class="card-type">Actor</p>
+              </a>
+            <% } else if (person.job && person.job.toLowerCase().includes('directorName')) { %>
+              <a href="/director/<%= person.person_id %>" class="result-card">
+                <h3 class="card-title"><%= person.person_name %></h3>
+                <p class="card-type">Director</p>
+              </a>
+            <% } else { %>
+              <a href="#" class="result-card">
+                <h3 class="card-title"><%= person.person_name %></h3>
+                <p class="card-type"><%= person.job %></p>
+              </a>
+            <% } %>
+          <% }); %>
         </div>
-      </a>
-      <% }); %>
+      <% } %>
+
+      <h2 class="results-header">Países</h2>
+      <% if (countries.length === 0) { %>
+      <p class="no-results">No se encontraron países.</p>
+      <% } else { %>
+      <div class="results-grid">
+        <% countries.forEach((country) => { %>
+        <a href="/country/<%= country.country_id %>" class="result-card">
+          <h3 class="card-title"><%= country.country_name %></h3>
+          <p class="card-type">País</p>
+        </a>
+        <% }); %>
+      </div>
+      <% } %>
     </div>
     <% } %>
 

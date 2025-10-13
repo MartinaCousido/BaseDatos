@@ -1,78 +1,99 @@
 /* Estilos generales */
 body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #141414; /* Un fondo oscuro */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #3a3a3a;
     color: white;
 }
 
 /* --- ESTILOS DE LA VISTA INICIAL (HERO) --- */
 .hero {
-    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    height: 100vh;
     display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center;   /* Centra verticalmente */
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    background-color: #111;
+    background-color: #3a3a3a;
 }
 
 .hero-content h1 {
-    font-size: 7rem; /* Título bien grande */
+    font-size: 7rem;
     font-weight: bold;
-    color: #E50914; /* Rojo tipo Netflix */
+    color: #FFC107;
     margin-bottom: 25px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* Estilo común para los buscadores */
 .hero-content form input,
 .nav-search input {
-    padding: 12px 20px;
+    padding: 14px 22px;
     font-size: 1.1rem;
-    border: 1px solid #333;
-    border-radius: 4px 0 0 4px; /* Bordes redondeados a la izquierda */
-    background-color: #333;
-    color: white;
+    border: 2px solid #555;
+    border-radius: 8px 0 0 8px;
+    background-color: #ffffff;
+    color: #2a2a2a;
     width: 400px;
-    outline: none; /* Quita el borde azul al hacer clic */
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.hero-content form input:focus,
+.nav-search input:focus {
+    background-color: #fff;
+    border-color: #FFC107;
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+}
+
+.hero-content form input::placeholder {
+    color: #888;
 }
 
 .hero-content form button,
 .nav-search button {
-    padding: 12px 20px;
+    padding: 14px 28px;
     font-size: 1.1rem;
     border: none;
-    background-color: #E50914;
-    color: white;
+    background-color: #FFC107;
+    color: #2a2a2a;
     cursor: pointer;
-    border-radius: 0 4px 4px 0; /* Bordes redondeados a la derecha */
-    margin-left: -5px; /* Une el botón con el input */
+    border-radius: 0 8px 8px 0;
+    margin-left: -5px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.hero-content form button:hover,
+.nav-search button:hover {
+    background-color: #FFD54F;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
 }
 
 /* --- ESTILOS DE LA BARRA DE NAVEGACIÓN (NAVBAR) --- */
 .navbar {
-    position: fixed; /* La deja fija en la pantalla */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    background-color: rgba(20, 20, 20, 0.95); /* Fondo semitransparente */
+    background-color: rgba(58, 58, 58, 0.95);
+    backdrop-filter: blur(10px);
     padding: 15px 0;
     z-index: 1000;
-    transition: transform 0.4s ease-in-out; /* Animación suave */
-
-    /* Inicialmente, la barra está oculta fuera de la pantalla */
+    transition: transform 0.4s ease-in-out;
     transform: translateY(-100%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Clase que se añade con JavaScript para mostrar la navbar */
 .navbar.visible {
-    transform: translateY(0); /* La mueve a su posición visible */
+    transform: translateY(0);
 }
 
 .nav-container {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between; /* Distribuye el espacio */
+    justify-content: space-between;
     align-items: center;
     padding: 0 20px;
 }
@@ -80,36 +101,48 @@ body {
 .nav-brand {
     font-size: 1.8rem;
     font-weight: bold;
-    color: #E50914;
+    color: #FFC107;
     text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.nav-brand:hover {
+    color: #FFD54F;
 }
 
 .nav-filters a {
-    color: #e0e0e0;
+    color: #ffffff;
     text-decoration: none;
     margin: 0 15px;
     font-size: 1rem;
-    transition: color 0.2s;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 6px;
 }
 
 .nav-filters a:hover {
-    color: white;
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #FFC107;
 }
 
 .nav-search input {
     width: 250px;
-    padding: 8px 15px;
+    padding: 10px 18px;
     font-size: 0.9rem;
-}
-.nav-search button {
-    padding: 8px 15px;
-    font-size: 0.9rem;
+    border-radius: 8px 0 0 8px;
 }
 
+.nav-search button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 0 8px 8px 0;
+}
 
 /* --- CONTENIDO DE EJEMPLO --- */
 .content-placeholder {
     padding: 80px 40px;
     text-align: center;
-    height: 1500px; /* Altura grande para asegurar que haya scroll */
+    min-height: 1500px;
+    background-color: #3a3a3a;
+    color: white;
 }
