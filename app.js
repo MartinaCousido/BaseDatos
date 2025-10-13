@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
 // Ruta para buscar películas en la base de datos PostgreSQL
 app.get('/buscar', async (req, res) => { // 4. Convertir a función async
     const searchTerm = req.query.q;
-    const limit = 50;
+    const limit = 100;
 
     // Los placeholders en pg son $1, $2, etc.
     const query_mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
