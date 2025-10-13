@@ -41,15 +41,28 @@ app.get('/', (req, res) => {
 // Ruta para buscar películas en la base de datos PostgreSQL
 app.get('/buscar', async (req, res) => { // 4. Convertir a función async
     const searchTerm = req.query.q;
+    const limit = 50;
 
     // Los placeholders en pg son $1, $2, etc.
-    const query = 'SELECT * FROM movie WHERE title ILIKE $1'; // ILIKE es case-insensitive en Postgres
+    const query_movies = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
+    const query_movies_tag = 'SELECT * FROM movie WHERE tagline ILIKE $1 LIMIT ' + String(limit);
+    const query_person = 'SELECT * FROM person WHERE person_name ILIKE $1 LIMIT ' + String(limit);
+    const query_country = 'SELECT * FROM country WHERE country_name ILIKE $1 LIMIT ' + String(limit);
     const values = [`%${searchTerm}%`];
 
     try {
         // Usar db.query que devuelve una promesa y acceder a .rows
-        const result = await db.query(query, values);
-        res.render('resultado', { movies: result.rows });
+        const result_movies = await db.query(query_movies, values);
+        const result_movies_tag = await db.query(query_movies_tag, values);
+        const result_person = await db.query(query_person, values);
+        const result_countries = await db.query(query_country, values);
+
+        res.render('resultado', { 
+            movies: result_movies.rows,
+            tags: result_movies_tag.rows,
+            persons: result_person.rows, 
+            countries: result_countries.rows 
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error en la búsqueda.');

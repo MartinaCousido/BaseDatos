@@ -1,18 +1,23 @@
+/* === ESTILOS GENERALES (Consistentes en todo el sitio) === */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f5f5f5;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    height: 100vh;
+    /* Mantenemos la paleta de colores y la fuente del sitio */
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #141414; /* Fondo oscuro principal */
+    color: #f5f5f5;           /* Texto principal claro */
     margin: 0;
+    padding: 0;
 }
 
-h1 {
-    font-size: 36px;
-    color: #333333;
-    margin-bottom: 20px;
+a {
+    /* Los enlaces son de un color claro que resalta al pasar el mouse */
+    text-decoration: none;
+    color: #e0e0e0;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #ffffff;
 }
 
 ul {
@@ -24,47 +29,66 @@ li {
     margin: 10px 0;
 }
 
-a {
-    text-decoration: none;
-    color: #0078d4;
-    font-weight: bold;
+
+/* === ESTILOS PARA EL CONTENIDO DE LAS PÁGINAS === */
+
+/* Usa esta clase como contenedor principal en tus nuevas páginas
+  Ej: <div class="page-content"> ... tu contenido ... </div> 
+*/
+.page-content {
+    max-width: 1100px;
+    margin: 0 auto; /* Centra el contenedor horizontalmente */
+    /* Padding superior para que el contenido no quede oculto por el navbar fijo */
+    padding: 120px 40px 40px 40px; 
 }
 
-a:hover {
-    color: #0056b3;
+h1 {
+    font-size: 3rem; /* Título grande y llamativo */
+    color: #E50914; /* Usamos el color rojo de la marca */
+    margin-bottom: 20px;
+    text-align: center;
 }
+
+
+/* === ESTILOS PARA COMPONENTES (Ej: Colapsables) === */
 
 .collapsible {
     cursor: pointer;
     user-select: none;
-    padding: 10px;
-    background-color: #0078d4;
+    padding: 15px 20px;
+    width: 100%;
+    /* El botón usa el color de acento principal */
+    background-color: #E50914;
     color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
     border: none;
     border-radius: 4px;
-    text-align: center;
+    text-align: left; /* Generalmente se ve mejor alineado a la izquierda */
+    transition: background-color 0.3s;
+}
+
+.collapsible:hover {
+    background-color: #f6121d; /* Un rojo un poco más brillante */
 }
 
 .content {
+    /* El contenido del colapsable tiene un fondo más sutil */
     display: none;
-    padding: 10px;
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 20px;
+    background-color: #222; /* Un gris oscuro, no negro puro */
+    border: 1px solid #333;
+    border-top: none; /* Quitamos el borde superior para que se una al botón */
+    border-radius: 0 0 4px 4px;
+    margin-bottom: 10px;
 }
 
+/* Esta clase no necesita cambios, solo controla la visibilidad */
 .active {
     display: block;
 }
 
-#overview {
-    width: 50%;
-    margin: 0 auto; /* Centrar horizontalmente el elemento */
-    padding: 10px; /* Agregar un poco de espacio interior para que se vea mejor */
-    background-color: #ffffff; /* Opcional: agregar un fondo blanco al elemento */
-}
-
-#inicio {
-    margin: 0 auto; /* Centrar horizontalmente el elemento */
-    padding: 50px; /* Agregar un poco de espacio interior para que se vea mejor */
-}
+/* NOTA: He eliminado los IDs #overview e #inicio. 
+  Es mejor usar la clase genérica ".page-content" para estructurar
+  el contenido de tus páginas y mantener la consistencia.
+*/
