@@ -314,7 +314,7 @@ h1 {
 /* Barra de navegación de las pestañas */
 .tab-nav {
     display: flex;
-    border-bottom: 2px solid rgba(255, 193, 7, 0.5); /* Línea divisoria */
+    border-bottom: 2px solid rgba(255, 193, 7, 0.2); /* Línea divisoria */
     margin-bottom: 30px;
 }
 
@@ -323,7 +323,7 @@ h1 {
     cursor: pointer;
     background-color: transparent;
     border: none;
-    border-bottom: 4px solid transparent; /* Borde inferior invisible por defecto */
+    border-bottom: 2px solid transparent; /* Borde inferior invisible por defecto */
     color: #e0e0e0;
     font-size: 1.2rem;
     font-weight: bold;
