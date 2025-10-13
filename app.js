@@ -178,53 +178,49 @@ app.get('/pelicula/:id', async (req, res) => { // Convertir a async
     }
 });
 
-// Ruta para mostrar la página de un actor específico (PostgreSQL)
+// ACTOR
 app.get('/actor/:id', async (req, res) => {
     const actorId = req.params.id;
-
-    const query = `
-    SELECT DISTINCT
-      person.person_name as actorName,
-      movie.*
-    FROM movie
-    INNER JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
-    INNER JOIN person ON person.person_id = movie_cast.person_id
-    WHERE movie_cast.person_id = $1;
-  `;
-
     try {
-        const result = await db.query(query, [actorId]);
-        const movies = result.rows;
-        const actorName = movies.length > 0 ? movies[0].actorname : ''; // Ojo: postgres devuelve todo en minúsculas por defecto
+        // Consulta: obtener nombre del actor y las películas donde participó
+        const actorResult = await db.query('SELECT person_name FROM person WHERE person_id = $1', [actorId]);
+        const moviesResult = await db.query(`
+            SELECT m.movie_id, m.title, m.release_date
+            FROM movie m
+            JOIN movie_cast mc ON m.movie_id = mc.movie_id
+            WHERE mc.person_id = $1
+        `, [actorId]);
+        
+        const actorName = actorResult.rows[0]?.person_name || 'Actor desconocido';
+        const movies = moviesResult.rows;
+
         res.render('actor', { actorName, movies });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error al cargar las películas del actor.');
+        res.status(500).send('Error al obtener información del actor');
     }
 });
 
-// Ruta para mostrar la página de un director específico (PostgreSQL)
+// DIRECTOR
 app.get('/director/:id', async (req, res) => {
     const directorId = req.params.id;
-
-    const query = `
-    SELECT DISTINCT
-      person.person_name as directorName,
-      movie.*
-    FROM movie
-    INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
-    INNER JOIN person ON person.person_id = movie_crew.person_id
-    WHERE movie_crew.job = 'Director' AND movie_crew.person_id = $1;
-  `;
-
     try {
-        const result = await db.query(query, [directorId]);
-        const movies = result.rows;
-        const directorName = movies.length > 0 ? movies[0].directorname : ''; // Ojo: postgres devuelve todo en minúsculas por defecto
+        // Consulta: obtener nombre del director y las películas que dirigió
+        const directorResult = await db.query('SELECT name FROM person WHERE person_id = $1', [directorId]);
+        const moviesResult = await db.query(`
+            SELECT m.movie_id, m.title, m.release_date
+            FROM movie m
+            JOIN movie_directors md ON m.movie_id = md.movie_id
+            WHERE md.person_id = $1
+        `, [directorId]);
+
+        const directorName = directorResult.rows[0]?.name || 'Director desconocido';
+        const movies = moviesResult.rows;
+
         res.render('director', { directorName, movies });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error al cargar las películas del director.');
+        res.status(500).send('Error al obtener información del director');
     }
 });
 
