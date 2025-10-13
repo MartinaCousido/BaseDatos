@@ -30,6 +30,45 @@ const db = new Pool({
     options: `-c search_path=movies,public`, //modificar options de acuerdo al nombre del esquema
 });
 
+async function getFormatedMoviesForSearchValue(toSearch, limit = 50 ) {
+    const mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
+    const mcontains = 'SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
+
+    const s_values = [`${toSearch}%`];
+    const c_values = [`%${toSearch}%`, `${toSearch}%`];
+
+    try{
+        const response = await db.query(mstart, s_values);
+        const response_c = await db.query(mcontains, c_values);
+
+        return response.rows.concat(response_c.rows);
+
+    }catch(error) {
+        console.log(error);
+        return [];
+    }
+}
+
+async function getFormatedActorsForSearchValue(toSearch, limit = 50) {
+
+    const astart = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 LIMIT ' + String(limit);
+    const acontains = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 LIMIT ' + String(limit);
+
+    const s_values = [`${toSearch}%`];
+    const c_values = [`%${toSearch}%`, `${toSearch}%`];
+
+    try{
+        const response = await db.query(astart, s_values);
+        const response_c = await db.query(acontains, c_values);
+
+        return response.rows.concat(response_c.rows);
+
+    }catch(error) {
+        console.log(error);
+        return [];
+    }
+}
+
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
@@ -43,23 +82,14 @@ app.get('/buscar', async (req, res) => { // 4. Convertir a función async
     const searchTerm = req.query.q;
     const limit = 100;
 
-    // Los placeholders en pg son $1, $2, etc.
-    const query_mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const query_mcontains = 'SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const query_astart = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 LIMIT ' + String(limit);
-    const query_acontains = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 LIMIT ' + String(limit);
-    const s_values = [`${searchTerm}%`];
-    const c_values = [`%${searchTerm}%`, `${searchTerm}%`];
-
     try {
-        const result_mstart = await db.query(query_mstart, s_values);
-        const result_mcontains = await db.query(query_mcontains, c_values);
-        const result_astart = await db.query(query_astart, s_values);
-        const result_acontains = await db.query(query_acontains, c_values)
+        const response = await getFormatedMoviesForSearchValue(searchTerm);
+        const response_actor = await getFormatedActorsForSearchValue(searchTerm);
 
         res.render('resultado', { 
-            movies: result_mstart.rows.concat(result_mcontains.rows),
-            actors: result_astart.rows.concat(result_acontains.rows),
+            toSearch: searchTerm,
+            movies: response,
+            actors: response_actor,
         });
 
     } catch (err) {

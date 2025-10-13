@@ -3,11 +3,34 @@
   <head>
     <title>Resultado de la Búsqueda</title>
     <link rel="stylesheet" href="\css\styles.css" />
+    <link rel="stylesheet" href="\css\index.css" />
+    <script>
+      // Espera a que la página se cargue
+      window.addEventListener("DOMContentLoaded", (event) => {
+        const navbar = document.querySelector(".navbar");
+        navbar.classList.add("visible");
+      });
+    </script>
   </head>
   <body class="page-content">
-    <h1>Resultados de la Búsqueda</h1>
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="#" class="nav-brand">The Movies</a>
+        <div class="nav-filters">
+          <a href="#">Acción</a>
+          <a href="#">Comedia</a>
+          <a href="#">Drama</a>
+          <a href="#">Terror</a>
+        </div>
+        <form class="nav-search" action="/buscar" method="GET">
+          <input type="text" name="q" placeholder="Buscar películas..." />
+          <button type="submit">Buscar</button>
+        </form>
+      </div>
+    </nav>
 
-    <h2 class="results-header">Películas <%= movies.length ? movies.length : '' %></h2>
+    <h2 class="results-header">Películas para <span class="results-header-search"><%= toSearch %></span>
+    <span class="info-search"><%= movies.length ? '('+String(movies.length)+')' : '' %></span></h2>
     <% if (movies.length === 0) { %>
     <p class="no-results">No se encontraron películas con ese título.</p>
     <% } else { %>
