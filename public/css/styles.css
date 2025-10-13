@@ -1,23 +1,23 @@
 /* === ESTILOS GENERALES (Consistentes en todo el sitio) === */
 body {
     /* Mantenemos la paleta de colores y la fuente del sitio */
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #141414; /* Fondo oscuro principal */
-    color: #f5f5f5;           /* Texto principal claro */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #3a3a3a; /* Fondo gris medio */
+    color: #ffffff;           /* Texto principal blanco */
     margin: 0;
     padding: 0;
 }
 
 a {
-    /* Los enlaces son de un color claro que resalta al pasar el mouse */
+    /* Los enlaces son blancos que resaltan a amarillo al pasar el mouse */
     text-decoration: none;
-    color: #e0e0e0;
+    color: #ffffff;
     font-weight: bold;
     transition: color 0.2s;
 }
 
 a:hover {
-    color: #ffffff;
+    color: #FFC107;
 }
 
 ul {
@@ -44,9 +44,10 @@ li {
 
 h1 {
     font-size: 3rem; /* Título grande y llamativo */
-    color: #E50914; /* Usamos el color rojo de la marca */
+    color: #FFC107; /* Amarillo para títulos */
     margin-bottom: 20px;
     text-align: center;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 
@@ -57,9 +58,9 @@ h1 {
     user-select: none;
     padding: 15px 20px;
     width: 100%;
-    /* El botón usa el color de acento principal */
-    background-color: #E50914;
-    color: white;
+    /* El botón usa el color amarillo */
+    background-color: #FFC107;
+    color: #2a2a2a;
     font-size: 1.1rem;
     font-weight: bold;
     border: none;
@@ -69,18 +70,19 @@ h1 {
 }
 
 .collapsible:hover {
-    background-color: #f6121d; /* Un rojo un poco más brillante */
+    background-color: #FFD54F; /* Un amarillo más brillante */
 }
 
 .content {
     /* El contenido del colapsable tiene un fondo más sutil */
     display: none;
     padding: 20px;
-    background-color: #222; /* Un gris oscuro, no negro puro */
-    border: 1px solid #333;
+    background-color: #4a4a4a; /* Un gris más claro */
+    border: 1px solid #555;
     border-top: none; /* Quitamos el borde superior para que se una al botón */
     border-radius: 0 0 4px 4px;
     margin-bottom: 10px;
+    color: #ffffff;
 }
 
 /* Esta clase no necesita cambios, solo controla la visibilidad */
@@ -104,8 +106,8 @@ h1 {
 /* Títulos para cada sección de resultados (Películas, Personas, etc.) */
 .results-header {
     font-size: 2.5rem;
-    color: #f5f5f5;
-    border-bottom: 3px solid #E50914; /* Línea roja de acento */
+    color: #ffffff;
+    border-bottom: 3px solid #FFC107; /* Línea amarilla de acento */
     padding-bottom: 10px;
     margin-bottom: 30px;
     margin-top: 40px; /* Espacio entre secciones */
@@ -113,10 +115,10 @@ h1 {
 
 /* Mensaje cuando no se encuentran resultados */
 .no-results {
-    background-color: #222;
+    background-color: #4a4a4a;
     padding: 20px;
     border-radius: 8px;
-    color: #aaa;
+    color: #e0e0e0;
     text-align: center;
     font-size: 1.1rem;
 }
@@ -131,12 +133,12 @@ h1 {
 
 /* Estilo de cada tarjeta individual */
 .result-card {
-    background-color: #1f1f1f; /* Un gris oscuro, ligeramente diferente al fondo */
-    border: 1px solid #333;
+    background-color: #4a4a4a; /* Un gris más claro */
+    border: 1px solid #555;
     border-radius: 8px;
     padding: 20px;
     text-decoration: none; /* Quitamos el subrayado del link */
-    color: #f5f5f5;
+    color: #ffffff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra sutil inicial */
     
     /* ✨ LA MAGIA DE LA ANIMACIÓN ✨ */
@@ -150,20 +152,20 @@ h1 {
     transform: translateY(-10px);
     /* Aumenta la sombra para dar la sensación de que está "flotando" */
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
-    border-color: #E50914; /* Resaltamos el borde con el color de la marca */
+    border-color: #FFC107; /* Resaltamos el borde con amarillo */
 }
 
 /* Título dentro de la tarjeta */
 .card-title {
     font-size: 1.4rem;
-    color: #E50914; /* Título en rojo */
+    color: #FFC107; /* Título en amarillo */
     margin: 0 0 10px 0;
 }
 
 /* Pequeño subtítulo para indicar el tipo de resultado */
 .card-type {
     font-size: 0.9rem;
-    color: #aaa;
+    color: #e0e0e0;
     text-transform: uppercase;
     letter-spacing: 1px;
 }

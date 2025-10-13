@@ -38,16 +38,28 @@
 
       <h2 class="results-header">Personas</h2>
       <% if (persons.length === 0) { %>
-      <p class="no-results">No se encontraron personas.</p>
+        <p class="no-results">No se encontraron personas.</p>
       <% } else { %>
-      <div class="results-grid">
-        <% persons.forEach((person) => { %>
-        <a href="/person/<%= person.person_id %>" class="result-card">
-          <h3 class="card-title"><%= person.person_name %></h3>
-          <p class="card-type">Persona</p>
-        </a>
-        <% }); %>
-      </div>
+        <div class="results-grid">
+          <% persons.forEach((person) => { %>
+            <% if (person.role.toLowerCase().includes('actor')) { %>
+              <a href="/actor/<%= person.person_id %>" class="result-card">
+                <h3 class="card-title"><%= person.person_name %></h3>
+                <p class="card-type">Actor</p>
+              </a>
+            <% } else if (person.role.toLowerCase().includes('director')) { %>
+              <a href="/director/<%= person.person_id %>" class="result-card">
+                <h3 class="card-title"><%= person.person_name %></h3>
+                <p class="card-type">Director</p>
+              </a>
+            <% } else { %>
+              <a href="#" class="result-card">
+                <h3 class="card-title"><%= person.person_name %></h3>
+                <p class="card-type"><%= person.role %></p>
+              </a>
+            <% } %>
+          <% }); %>
+        </div>
       <% } %>
 
       <h2 class="results-header">Países</h2>
