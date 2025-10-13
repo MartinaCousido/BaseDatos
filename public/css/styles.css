@@ -169,3 +169,176 @@ h1 {
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
+/* === ESTILOS PARA LA PÁGINA DE DETALLES DE PELÍCULA === */
+
+/* Contenedor principal */
+.movie-details {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 40px 40px 40px;
+}
+
+/* Título de la película */
+.movie-title {
+    font-size: 3.5rem;
+    color: #FFC107;
+    text-align: center;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+}
+
+/* Fecha de estreno */
+.movie-date {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #e0e0e0;
+    margin-bottom: 40px;
+}
+
+.movie-date strong {
+    color: #FFC107;
+}
+
+/* Grid para organizar la información en secciones */
+.movie-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* Sección individual (Directores, Escritores, etc.) */
+.info-section {
+    background-color: #4a4a4a;
+    padding: 25px;
+    border-radius: 12px;
+    border-left: 4px solid #FFC107;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.info-section h3 {
+    color: #FFC107;
+    font-size: 1.5rem;
+    margin: 0 0 15px 0;
+    border-bottom: 2px solid #555;
+    padding-bottom: 10px;
+}
+
+.info-section p {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+/* Sección del argumento (ocupa todo el ancho) */
+.synopsis-section {
+    background-color: #4a4a4a;
+    padding: 30px;
+    border-radius: 12px;
+    border-left: 4px solid #FFC107;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 40px;
+}
+
+.synopsis-section h3 {
+    color: #FFC107;
+    font-size: 1.8rem;
+    margin: 0 0 20px 0;
+    border-bottom: 2px solid #555;
+    padding-bottom: 10px;
+}
+
+.synopsis-section p {
+    color: #ffffff;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+/* Sección del elenco */
+.cast-section {
+    background-color: #4a4a4a;
+    padding: 30px;
+    border-radius: 12px;
+    border-left: 4px solid #FFC107;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 40px;
+}
+
+.cast-section h3 {
+    color: #FFC107;
+    font-size: 1.8rem;
+    margin: 0 0 20px 0;
+    border-bottom: 2px solid #555;
+    padding-bottom: 10px;
+}
+
+.cast-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.cast-item {
+    background-color: #3a3a3a;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    transition: all 0.3s ease;
+}
+
+.cast-item:hover {
+    transform: translateY(-5px);
+    border-color: #FFC107;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.cast-item strong {
+    color: #FFC107;
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.cast-item span {
+    color: #e0e0e0;
+    font-size: 0.95rem;
+}
+
+/* Botón de volver al inicio */
+.back-button {
+    display: inline-block;
+    background-color: #FFC107;
+    color: #2a2a2a;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.back-button:hover {
+    background-color: #FFD54F;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4);
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+    .movie-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .movie-title {
+        font-size: 2.5rem;
+    }
+    
+    .cast-list {
+        grid-template-columns: 1fr;
+    }
+}

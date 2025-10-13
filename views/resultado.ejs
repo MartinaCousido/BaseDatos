@@ -42,12 +42,12 @@
       <% } else { %>
         <div class="results-grid">
           <% persons.forEach((person) => { %>
-            <% if (person.role.toLowerCase().includes('actor')) { %>
+            <% if (person.job && person.job.toLowerCase().includes('actor')) { %>
               <a href="/actor/<%= person.person_id %>" class="result-card">
                 <h3 class="card-title"><%= person.person_name %></h3>
                 <p class="card-type">Actor</p>
               </a>
-            <% } else if (person.role.toLowerCase().includes('director')) { %>
+            <% } else if (person.job && person.job.toLowerCase().includes('directorName')) { %>
               <a href="/director/<%= person.person_id %>" class="result-card">
                 <h3 class="card-title"><%= person.person_name %></h3>
                 <p class="card-type">Director</p>
@@ -55,7 +55,7 @@
             <% } else { %>
               <a href="#" class="result-card">
                 <h3 class="card-title"><%= person.person_name %></h3>
-                <p class="card-type"><%= person.role %></p>
+                <p class="card-type"><%= person.job %></p>
               </a>
             <% } %>
           <% }); %>
