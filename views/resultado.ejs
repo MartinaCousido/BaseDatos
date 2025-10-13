@@ -4,65 +4,39 @@
     <title>Resultado de la Búsqueda</title>
     <link rel="stylesheet" href="\css\styles.css" />
   </head>
-  <body>
-    <div class="page-content">
-      <h1>Resultados de la Búsqueda</h1>
+  <body class="page-content">
+    <h1>Resultados de la Búsqueda</h1>
 
-      <h2 class="results-header">Películas por Título</h2>
-      <% if (movies.length === 0) { %>
-      <p class="no-results">No se encontraron películas con ese título.</p>
-      <% } else { %>
-      <div class="results-grid">
-        <% movies.forEach((movie) => { %>
-        <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
+    <h2 class="results-header">Películas por Título</h2>
+    <% if (movies.length === 0) { %>
+    <p class="no-results">No se encontraron películas con ese título.</p>
+    <% } else { %>
+    <div class="results-grid">
+      <% movies.forEach((movie) => { %>
+      <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
+        <img class="card-img" src="./imgs/poster.jpg" alt="" />
+        <div class="card-info">
           <h3 class="card-title"><%= movie.title %></h3>
-          <p class="card-type">Película</p>
-        </a>
-        <% }); %>
-      </div>
-      <% } %>
-
-      <h2 class="results-header">Películas por Tag</h2>
-      <% if (tags.length === 0) { %>
-      <p class="no-results">No se encontraron películas con ese tag.</p>
-      <% } else { %>
-      <div class="results-grid">
-        <% tags.forEach((movie) => { %>
-        <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
-          <h3 class="card-title"><%= movie.title %></h3>
-          <p class="card-type">Película (Tag)</p>
-        </a>
-        <% }); %>
-      </div>
-      <% } %>
-
-      <h2 class="results-header">Personas</h2>
-      <% if (persons.length === 0) { %>
-      <p class="no-results">No se encontraron personas.</p>
-      <% } else { %>
-      <div class="results-grid">
-        <% persons.forEach((person) => { %>
-        <a href="/person/<%= person.person_id %>" class="result-card">
-          <h3 class="card-title"><%= person.person_name %></h3>
-          <p class="card-type">Persona</p>
-        </a>
-        <% }); %>
-      </div>
-      <% } %>
-
-      <h2 class="results-header">Países</h2>
-      <% if (countries.length === 0) { %>
-      <p class="no-results">No se encontraron países.</p>
-      <% } else { %>
-      <div class="results-grid">
-        <% countries.forEach((country) => { %>
-        <a href="/country/<%= country.country_id %>" class="result-card">
-          <h3 class="card-title"><%= country.country_name %></h3>
-          <p class="card-type">País</p>
-        </a>
-        <% }); %>
-      </div>
-      <% } %>
+          <span class="card-tagline"><%= movie.tagline %></span>
+        </div>
+      </a>
+      <% }); %>
     </div>
+    <% } %>
+
+    <h2 class="results-header">Personas</h2>
+    <% if (persons.length === 0) { %>
+    <p class="no-results">No se encontraron personas.</p>
+    <% } else { %>
+    <div class="results-grid">
+      <% persons.forEach((person) => { %>
+      <a href="/person/<%= person.person_id %>" class="result-card">
+        <img class="card-img" src="./imgs/img.png" alt="" />
+        <h3 class="card-title"><%= person.person_name %></h3>
+        <p class="card-type">Persona</p>
+      </a>
+      <% }); %>
+    </div>
+    <% } %>
   </body>
 </html>

@@ -47,22 +47,26 @@ app.get('/buscar', async (req, res) => { // 4. Convertir a función async
     const query_movies = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
     const query_movies_tag = 'SELECT * FROM movie WHERE tagline ILIKE $1 LIMIT ' + String(limit);
     const query_person = 'SELECT * FROM person WHERE person_name ILIKE $1 LIMIT ' + String(limit);
-    const query_country = 'SELECT * FROM country WHERE country_name ILIKE $1 LIMIT ' + String(limit);
-    const values = [`%${searchTerm}%`];
+    const values = [`${searchTerm}%`];
+    const values_1 = [`%${searchTerm}%`];
 
     try {
         // Usar db.query que devuelve una promesa y acceder a .rows
         const result_movies = await db.query(query_movies, values);
-        const result_movies_tag = await db.query(query_movies_tag, values);
         const result_person = await db.query(query_person, values);
-        const result_countries = await db.query(query_country, values);
+        
+        const result_movies_1 = await db.query(query_movies, values_1);
+        const result_person_1 = await db.query(query_person, values_1);
+    
+        // agrego las que no estan
+        const filtred_m = result_movies_1.rows.filter((movie) => !movie in result_movies.rows)
+        const filtred_p = result_person_1.rows.filter((person) => !person in result_person.rows)
 
         res.render('resultado', { 
-            movies: result_movies.rows,
-            tags: result_movies_tag.rows,
-            persons: result_person.rows, 
-            countries: result_countries.rows 
+            movies: result_movies.rows.concat(filtred_m),
+            persons: result_person.rows.concat(filtred_p),
         });
+
     } catch (err) {
         console.error(err);
         res.status(500).send('Error en la búsqueda.');
@@ -102,6 +106,7 @@ app.get('/pelicula/:id', async (req, res) => { // Convertir a async
         }
 
         const movieData = {
+            tagline: rows[0].tagline,
             id: rows[0].id,
             title: rows[0].title,
             release_date: rows[0].release_date,
