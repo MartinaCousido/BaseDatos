@@ -41,25 +41,25 @@ app.get('/', (req, res) => {
 // Ruta para buscar películas en la base de datos PostgreSQL
 app.get('/buscar', async (req, res) => { // 4. Convertir a función async
     const searchTerm = req.query.q;
-    const limit = 20;
+    const limit = 50;
 
     // Los placeholders en pg son $1, $2, etc.
     const query_mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
     const query_mcontains = 'SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const query_pstart = 'SELECT * FROM person WHERE person_name ILIKE $1 LIMIT ' + String(limit);
-    const query_pcontains = 'SELECT * FROM person WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 LIMIT ' + String(limit);
+    const query_astart = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 LIMIT ' + String(limit);
+    const query_acontains = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 LIMIT ' + String(limit);
     const s_values = [`${searchTerm}%`];
     const c_values = [`%${searchTerm}%`, `${searchTerm}%`];
 
     try {
         const result_mstart = await db.query(query_mstart, s_values);
         const result_mcontains = await db.query(query_mcontains, c_values);
-        const result_pstart = await db.query(query_pstart, s_values);
-        const result_pcontains = await db.query(query_pcontains, c_values)
+        const result_astart = await db.query(query_astart, s_values);
+        const result_acontains = await db.query(query_acontains, c_values)
 
         res.render('resultado', { 
             movies: result_mstart.rows.concat(result_mcontains.rows),
-            persons: result_pstart.rows.concat(result_pcontains.rows),
+            actors: result_astart.rows.concat(result_acontains.rows),
         });
 
     } catch (err) {

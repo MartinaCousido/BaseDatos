@@ -24,16 +24,15 @@
     </div>
     <% } %>
 
-    <h2 class="results-header">Personas</h2>
-    <% if (persons.length === 0) { %>
-    <p class="no-results">No se encontraron personas.</p>
+    <h2 class="results-header">Actores</h2>
+    <% if (actors.length === 0) { %>
+    <p class="no-results">No se encontraron actores.</p>
     <% } else { %>
     <div class="results-grid">
-      <% persons.forEach((person) => { %>
-      <a href="/person/<%= person.person_id %>" class="result-card">
+      <% actors.forEach((actor) => { %>
+      <a href="/person/<%= actor.person_id %>" class="result-card">
         <img class="card-img" src="./imgs/img.png" alt="" />
-        <h3 class="card-title"><%= person.person_name %></h3>
-        <p class="card-type">Persona</p>
+        <h3 class="card-title"><%= actor.person_name %></h3>
       </a>
       <% }); %>
     </div>
