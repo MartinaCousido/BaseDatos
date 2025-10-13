@@ -1,23 +1,23 @@
 /* === ESTILOS GENERALES (Consistentes en todo el sitio) === */
 body {
-    /* Mantenemos la paleta de colores y la fuente del sitio */
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #141414; /* Fondo oscuro principal */
-    color: #f5f5f5;           /* Texto principal claro */
+    /* Paleta de colores gris/amarillo y fuente Segoe UI */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #3a3a3a; /* Fondo gris medio */
+    color: #ffffff;           /* Texto principal blanco */
     margin: 0;
     padding: 0;
 }
 
 a {
-    /* Los enlaces son de un color claro que resalta al pasar el mouse */
+    /* Los enlaces son blancos que resaltan a amarillo al pasar el mouse */
     text-decoration: none;
-    color: #e0e0e0;
+    color: #ffffff;
     font-weight: bold;
     transition: color 0.2s;
 }
 
 a:hover {
-    color: #ffffff;
+    color: #FFC107; /* Amarillo */
 }
 
 ul {
@@ -29,158 +29,264 @@ li {
     margin: 10px 0;
 }
 
-
 /* === ESTILOS PARA EL CONTENIDO DE LAS PÁGINAS === */
-
-/* Usa esta clase como contenedor principal en tus nuevas páginas
-  Ej: <div class="page-content"> ... tu contenido ... </div> 
-*/
 .page-content {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto; /* Centra el contenedor horizontalmente */
-    /* Padding superior para que el contenido no quede oculto por el navbar fijo */
-    padding: 120px 40px 40px 40px; 
+    padding: 120px 40px 40px 40px; /* Padding superior para que no tape el navbar */
 }
 
 h1 {
-    font-size: 3rem; /* Título grande y llamativo */
-    color: #E50914; /* Usamos el color rojo de la marca */
+    font-size: 3rem;
+    color: #FFC107; /* Amarillo para títulos principales */
     margin-bottom: 20px;
     text-align: center;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-
 /* === ESTILOS PARA COMPONENTES (Ej: Colapsables) === */
-
 .collapsible {
     cursor: pointer;
     user-select: none;
     padding: 15px 20px;
     width: 100%;
-    /* El botón usa el color de acento principal */
-    background-color: #E50914;
-    color: white;
+    background-color: #FFC107; /* Botón en amarillo */
+    color: #2a2a2a;
     font-size: 1.1rem;
     font-weight: bold;
     border: none;
     border-radius: 4px;
-    text-align: left; /* Generalmente se ve mejor alineado a la izquierda */
+    text-align: left;
     transition: background-color 0.3s;
 }
 
 .collapsible:hover {
-    background-color: #f6121d; /* Un rojo un poco más brillante */
+    background-color: #FFD54F; /* Amarillo más brillante */
 }
 
 .content {
-    /* El contenido del colapsable tiene un fondo más sutil */
     display: none;
     padding: 20px;
-    background-color: #222; /* Un gris oscuro, no negro puro */
-    border: 1px solid #333;
-    border-top: none; /* Quitamos el borde superior para que se una al botón */
+    background-color: #4a4a4a; /* Un gris más claro */
+    border: 1px solid #555;
+    border-top: none;
     border-radius: 0 0 4px 4px;
     margin-bottom: 10px;
 }
 
-/* Esta clase no necesita cambios, solo controla la visibilidad */
 .active {
     display: block;
 }
 
-/* NOTA: He eliminado los IDs #overview e #inicio. 
-  Es mejor usar la clase genérica ".page-content" para estructurar
-  el contenido de tus páginas y mantener la consistencia.
-*/
 /* === ESTILOS PARA LA PÁGINA DE RESULTADOS === */
-
-/* Contenedor principal para la página de resultados */
-.page-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 120px 40px 40px 40px; /* Padding superior para no chocar con el navbar */
-}
-
-/* Títulos para cada sección de resultados (Películas, Personas, etc.) */
 .results-header {
     font-size: 2.5rem;
-    color: #f5f5f5;
-    border-bottom: 3px solid #E50914; /* Línea roja de acento */
+    color: #ffffff;
+    border-bottom: 3px solid #FFC107; /* Línea amarilla de acento */
     padding-bottom: 10px;
     margin-bottom: 30px;
-    margin-top: 40px; /* Espacio entre secciones */
+    margin-top: 40px;
 }
 
-/* Mensaje cuando no se encuentran resultados */
 .no-results {
-    background-color: #222;
+    background-color: #4a4a4a;
     padding: 20px;
     border-radius: 8px;
-    color: #aaa;
+    color: #e0e0e0;
     text-align: center;
     font-size: 1.1rem;
 }
 
-/* La grilla que contendrá todas las tarjetas */
 .results-grid {
     display: grid;
-    /* Crea columnas automáticas que miden mínimo 250px y máximo 1fr (lo que quepa) */
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 25px; /* Espacio entre las tarjetas */
+    gap: 25px;
 }
 
-/* Estilo de cada tarjeta individual */
 .result-card {
-    background-color: #1f1f1f; /* Un gris oscuro, ligeramente diferente al fondo */
-    border: 1px solid #333;
+    background-color: #4a4a4a;
+    border: 1px solid #555;
     border-radius: 8px;
-    text-decoration: none; /* Quitamos el subrayado del link */
-    color: #f5f5f5;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra sutil inicial */
+    text-decoration: none;
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* ✨ LA MAGIA DE LA ANIMACIÓN ✨ */
-    /* La transición se aplicará a las propiedades 'transform' y 'box-shadow' */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-/* El efecto cuando pasas el mouse por encima */
 .result-card:hover {
-    /* Mueve la tarjeta 10px hacia arriba */
     transform: translateY(-10px);
-    /* Aumenta la sombra para dar la sensación de que está "flotando" */
-    box-shadow: 0 12px 24px rgba(255, 50, 50, 0.5);
-    border-color: #E50914; /* Resaltamos el borde con el color de la marca */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+    border-color: #FFC107; /* Resaltamos el borde con amarillo */
 }
 
-/* Título dentro de la tarjeta */
+/* Nuevos elementos para la tarjeta (imagen, info, etc.) */
+.card-img {
+    width: 100%;
+    height: 20rem; /* Altura fija para la imagen */
+    background-color: #2a2a2a; /* Color de fondo mientras no hay imagen */
+    border-bottom: 2px solid #FFC107;
+}
+
+.card-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Permite que esta sección ocupe el espacio sobrante */
+}
+
 .card-title {
     font-size: 1.4rem;
-    color: #E50914; /* Título en rojo */
+    color: #FFC107; /* Título en amarillo */
     margin: 0 0 10px 0;
-}
-
-/* Pequeño subtítulo para indicar el tipo de resultado */
-.card-type {
-    font-size: 0.6rem;
-    color: #aaa;
-    text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 .card-tagline {
     font-size: 0.9rem;
-    color: #aaa;
+    color: #e0e0e0;
+    font-style: italic;
+    margin-bottom: auto; /* Empuja el 'card-type' hacia abajo */
+    padding-bottom: 10px;
 }
 
-.card-img {
-    width: 100%;
-    height: 20rem;
-    border-style: hidden;
-    background-color: #E50914;
+.card-type {
+    font-size: 0.8rem;
+    color: #e0e0e0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 10px;
 }
 
-.card-info {
-    padding: 10px;
+/* === ESTILOS PARA LA PÁGINA DE DETALLES DE PELÍCULA === */
+
+.movie-title {
+    font-size: 3.5rem;
+    color: #FFC107;
+    text-align: center;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+}
+
+.movie-date {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #e0e0e0;
+    margin-bottom: 40px;
+}
+
+.movie-date strong {
+    color: #FFC107;
+}
+
+.movie-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.info-section {
+    background-color: #4a4a4a;
+    padding: 25px;
+    border-radius: 12px;
+    border-left: 4px solid #FFC107;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.info-section h3, .synopsis-section h3, .cast-section h3 {
+    color: #FFC107;
+    font-size: 1.5rem;
+    margin: 0 0 15px 0;
+    border-bottom: 2px solid #555;
+    padding-bottom: 10px;
+}
+
+.info-section p {
+    font-size: 1.1rem;
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+.synopsis-section, .cast-section {
+    background-color: #4a4a4a;
+    padding: 30px;
+    border-radius: 12px;
+    border-left: 4px solid #FFC107;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 40px;
+}
+
+.synopsis-section p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+.cast-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.cast-item {
+    background-color: #3a3a3a;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    transition: all 0.3s ease;
+}
+
+.cast-item:hover {
+    transform: translateY(-5px);
+    border-color: #FFC107;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.cast-item strong {
+    color: #FFC107;
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.cast-item span {
+    color: #e0e0e0;
+    font-size: 0.95rem;
+}
+
+.back-button {
+    display: inline-block;
+    background-color: #FFC107;
+    color: #2a2a2a;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.back-button:hover {
+    background-color: #FFD54F;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4);
+}
+
+/* === ESTILOS RESPONSIVE === */
+@media (max-width: 768px) {
+    .movie-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .movie-title {
+        font-size: 2.5rem;
+    }
+    
+    .cast-list {
+        grid-template-columns: 1fr;
+    }
 }
