@@ -1,0 +1,115 @@
+/* Estilos generales */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #141414; /* Un fondo oscuro */
+    color: white;
+}
+
+/* --- ESTILOS DE LA VISTA INICIAL (HERO) --- */
+.hero {
+    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;   /* Centra verticalmente */
+    text-align: center;
+    background-color: #111;
+}
+
+.hero-content h1 {
+    font-size: 7rem; /* Título bien grande */
+    font-weight: bold;
+    color: #E50914; /* Rojo tipo Netflix */
+    margin-bottom: 25px;
+}
+
+/* Estilo común para los buscadores */
+.hero-content form input,
+.nav-search input {
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    border: 1px solid #333;
+    border-radius: 4px 0 0 4px; /* Bordes redondeados a la izquierda */
+    background-color: #333;
+    color: white;
+    width: 400px;
+    outline: none; /* Quita el borde azul al hacer clic */
+}
+
+.hero-content form button,
+.nav-search button {
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    border: none;
+    background-color: #E50914;
+    color: white;
+    cursor: pointer;
+    border-radius: 0 4px 4px 0; /* Bordes redondeados a la derecha */
+    margin-left: -5px; /* Une el botón con el input */
+}
+
+/* --- ESTILOS DE LA BARRA DE NAVEGACIÓN (NAVBAR) --- */
+.navbar {
+    position: fixed; /* La deja fija en la pantalla */
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(20, 20, 20, 0.95); /* Fondo semitransparente */
+    padding: 15px 0;
+    z-index: 1000;
+    transition: transform 0.4s ease-in-out; /* Animación suave */
+
+    /* Inicialmente, la barra está oculta fuera de la pantalla */
+    transform: translateY(-100%);
+}
+
+/* Clase que se añade con JavaScript para mostrar la navbar */
+.navbar.visible {
+    transform: translateY(0); /* La mueve a su posición visible */
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between; /* Distribuye el espacio */
+    align-items: center;
+    padding: 0 20px;
+}
+
+.nav-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #E50914;
+    text-decoration: none;
+}
+
+.nav-filters a {
+    color: #e0e0e0;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+.nav-filters a:hover {
+    color: white;
+}
+
+.nav-search input {
+    width: 250px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+.nav-search button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
+
+/* --- CONTENIDO DE EJEMPLO --- */
+.content-placeholder {
+    padding: 80px 40px;
+    text-align: center;
+    height: 1500px; /* Altura grande para asegurar que haya scroll */
+}
