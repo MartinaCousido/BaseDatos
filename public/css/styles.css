@@ -314,7 +314,6 @@ h1 {
 /* Barra de navegación de las pestañas */
 .tab-nav {
     display: flex;
-    border-bottom: 2px solid rgba(255, 193, 7, 0.2); /* Línea divisoria */
     margin-bottom: 30px;
 }
 
@@ -323,8 +322,8 @@ h1 {
     cursor: pointer;
     background-color: transparent;
     border: none;
-    border-bottom: 2px solid transparent; /* Borde inferior invisible por defecto */
-    color: #e0e0e0;
+    border-bottom: 2px solid rgba(255, 193, 7, 0.2); /* Línea divisoria */
+    color: #e0e0e093;
     font-size: 1.2rem;
     font-weight: bold;
     transition: all 0.3s ease;
@@ -332,14 +331,14 @@ h1 {
 }
 
 .tab-button:hover {
-    background-color: #4a4a4a;
+    background-color: #4a4a4a39;
     color: #ffffff;
 }
 
 /* Estilo para la pestaña ACTIVA */
 .tab-button.active {
     color: #FFC107; /* Color amarillo de acento */
-    border-bottom-color: #FFC107;/* El borde inferior se hace visible y amarillo */
+    border-bottom: 2px solid rgba(255, 193, 7, 0.639); /* Línea divisoria */
 }
 
 /* Paneles individuales (películas, actores, etc.) */
