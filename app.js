@@ -30,16 +30,20 @@ const db = new Pool({
     options: `-c search_path=movies,public`, //modificar options de acuerdo al nombre del esquema
 });
 
-async function getFormatedMoviesForSearchValue(toSearch, limit = 50 ) {
-    const mstart = 'SELECT * FROM movie WHERE title ILIKE $1';// LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const mcontains = `SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2`;// LIMIT + String(limit); // ILIKE es case-insensitive en Postgres
+async function getFormatedMoviesForSearchValue(toSearch, limit = 100 ) {
+    const mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
+    const review = 'SELECT * FROM movie WHERE (overview ILIKE $1 OR tagline ILIKE $1) LIMIT ' + String(limit);
+    const mcontains = `SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ` + String(limit); // ILIKE es case-insensitive en Postgres
 
     const s_values = [`${toSearch}%`];
     const c_values = [`%${toSearch}%`, `${toSearch}%`];
 
     try{
         const response = await db.query(mstart, s_values);
+        const response_r = await db.query(review, [`%${toSearch}%`]);
         const response_c = await db.query(mcontains, c_values);
+        
+        response.rows = response.rows.concat(response_r.rows);
 
         return response.rows.concat(response_c.rows);
 
@@ -49,21 +53,21 @@ async function getFormatedMoviesForSearchValue(toSearch, limit = 50 ) {
     }
 }
 
-async function getFormatedActorsForSearchValue(toSearch, limit = 50) {
+async function getFormatedActorsForSearchValue(toSearch, limit = 100) {
 
     const astart = 
     `SELECT DISTINCT person_name, person.person_id 
     FROM person 
     left join movie_cast as mc on person.person_id = mc.person_id 
-    WHERE person_name ILIKE $1 AND character_name IS NOT NULL`;
-    // LIMIT ${String(limit)}`;
+    WHERE person_name ILIKE $1 AND character_name IS NOT NULL
+    LIMIT ${String(limit)}`;
 
     const acontains = 
     `SELECT DISTINCT person_name, person.person_id
     FROM person 
     left join movie_cast as mc on person.person_id = mc.person_id 
-    WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 AND character_name IS NOT NULL`;
-    // LIMIT ${String(limit)}`;
+    WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 AND character_name IS NOT NULL
+    LIMIT ${String(limit)}`;
 
     const s_values = [`${toSearch}%`];
     const c_values = [`%${toSearch}%`, `${toSearch}%`];
@@ -80,7 +84,7 @@ async function getFormatedActorsForSearchValue(toSearch, limit = 50) {
     }
 }
 
-async function getFormatedDirectorsForSearchValue(toSearch, limit = 50) {
+async function getFormatedDirectorsForSearchValue(toSearch, limit = 100) {
     const start = 
     `select distinct person_name, person.person_id
     from person
@@ -92,8 +96,8 @@ async function getFormatedDirectorsForSearchValue(toSearch, limit = 50) {
     `select distinct person_name, person.person_id
     from person
     left join movie_crew as mc on person.person_id = mc.person_id
-    where job ilike '%director%' and person.person_name ilike $1 and NOT person.person_name ILIKE $2`;
-    // limit ${limit}`;
+    where job ilike '%director%' and person.person_name ilike $1 and NOT person.person_name ILIKE $2
+    limit ${limit}`;
 
     const s_values = [`${toSearch}%`];
     const c_values = [`%${toSearch}%`, `${toSearch}%`];
@@ -127,6 +131,13 @@ app.get('/buscar', async (req, res) => { // 4. Convertir a función async
         const response_movies = await getFormatedMoviesForSearchValue(searchTerm);
         const response_actors = await getFormatedActorsForSearchValue(searchTerm);
         const response_directors = await getFormatedDirectorsForSearchValue(searchTerm);
+
+        // if the search term is nothing show the first 100s and sorted
+        if (searchTerm.length <= 0) {
+            response_movies.sort((a, b) => a.title < b.title ? -1 : a.title == b.title ? 0 : 1)
+            response_actors.sort((a, b) => a.person_name < b.person_name ? -1 : a.person_name == b.person_name ? 0 : 1)
+            response_directors.sort((a, b) => a.person_name < b.person_name ? -1 : a.person_name == b.person_name ? 0 : 1)
+        }
 
         res.render('resultado', { 
             toSearch: searchTerm,
