@@ -32,7 +32,7 @@ const db = new Pool({
 
 async function getFormatedMoviesForSearchValue(toSearch, limit = 100 ) {
     const mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const review = 'SELECT * FROM movie WHERE (overview ILIKE $1 OR tagline ILIKE $1) LIMIT ' + String(limit);
+    const review = 'SELECT * FROM movie WHERE (overview ILIKE $1 OR tagline ILIKE $1) AND NOT title ILIKE $2 LIMIT ' + String(limit);
     const mcontains = `SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ` + String(limit); // ILIKE es case-insensitive en Postgres
 
     const s_values = [`${toSearch}%`];
@@ -40,12 +40,12 @@ async function getFormatedMoviesForSearchValue(toSearch, limit = 100 ) {
 
     try{
         const response = await db.query(mstart, s_values);
-        const response_r = await db.query(review, [`%${toSearch}%`]);
+        const response_r = await db.query(review, [`%${toSearch}%`, `${toSearch}%`]);
         const response_c = await db.query(mcontains, c_values);
         
-        response.rows = response.rows.concat(response_r.rows);
+        response.rows = response.rows.concat(response_c.rows);
 
-        return response.rows.concat(response_c.rows);
+        return response.rows.concat(response_r.rows);
 
     }catch(error) {
         console.log(error);
