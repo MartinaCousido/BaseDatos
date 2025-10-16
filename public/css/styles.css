@@ -393,3 +393,65 @@ h1 {
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4);
 }
+
+/* === ESTILOS PARA LA PAGINACIÓN === */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 50px;
+    padding: 20px;
+    user-select: none;
+}
+
+.page-link {
+    padding: 10px 18px;
+    border: 2px solid #555;
+    border-radius: 8px;
+    color: #ffffff;
+    background-color: #4a4a4a;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: #FFC107;
+    border-color: #FFC107;
+    color: #2a2a2a;
+    transform: translateY(-3px);
+}
+
+/* Estilo para la página actual */
+.page-link.active {
+    background-color: #FFC107;
+    border-color: #FFD54F;
+    color: #2a2a2a;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.4);
+}
+
+/* Estilo para los botones "Anterior/Siguiente" deshabilitados */
+.page-link.disabled {
+    background-color: #333;
+    color: #777;
+    border-color: #444;
+    pointer-events: none; /* Evita que se pueda hacer clic */
+}
+
+.page-link.disabled:hover {
+    background-color: #333; /* Sin cambio de color al pasar el mouse */
+    transform: none;
+}
+
+/* Estilo para el texto de información de página */
+.page-info {
+    padding: 10px 18px;
+    border: 2px solid #555;
+    border-radius: 8px;
+    color: #e0e0e0; /* Un color de texto claro pero no tan brillante como el activo */
+    background-color: #4a4a4a;
+    font-weight: bold;
+    font-size: 1rem;
+    white-space: nowrap; /* Evita que "Página X de Y" se parta en dos líneas */
+}

@@ -1,157 +1,132 @@
-// Se debe crear archivo .env con las variables de entorno de la base de datos
-// DB_USER=postgres
-// DB_PASSWORD=<password_de_la_base_de_datos>
-// DB_HOST=localhost
-// DB_PORT=5432
-// DB_DATABASE=movies
-
 require('dotenv').config();
 
 const express = require('express');
-
 const { Pool } = require('pg');
 
 const app = express();
 const port = process.env.PORT || 3500;
 
-// Serve static files from the "views" directory
 app.use(express.static('views'));
-
-// Servir archivos estáticos (CSS, JS del cliente) desde la carpeta 'public'
 app.use(express.static('public'));
 
-// Crear un "pool" de conexiones a PostgreSQL usando las variables de entorno
 const db = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_DATABASE,
     password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+    port: process.env.DB_PORT,    
     options: `-c search_path=movies,public`, //modificar options de acuerdo al nombre del esquema
 });
 
-async function getFormatedMoviesForSearchValue(toSearch, limit = 100 ) {
-    const start = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const contains = `SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ` + String(limit); // ILIKE es case-insensitive en Postgres
-    const review = 'SELECT * FROM movie WHERE (overview ILIKE $1 OR tagline ILIKE $1) AND NOT title ILIKE $2 LIMIT ' + String(limit);
-
-    try{
-        const response = await db.query(start, [`${toSearch}%`]);
-        const response_c = await db.query(contains, [`%${toSearch}%`, `${toSearch}%`]);
-        const response_r = await db.query(review, [`% ${toSearch} %`, `%${toSearch}%`]);
-        
-        response.rows = response.rows.concat(response_c.rows);
-        return {
-            byTitle: response.rows,
-            related: response_r.rows,
-        };
-
-    }catch(error) {
-        console.log(error);
-        return {
-            byTitle: [],
-            related: []
-        };
-    }
-}
-
-async function getFormatedActorsForSearchValue(toSearch, limit = 100) {
-
-    const astart = 
-    `SELECT DISTINCT person_name, person.person_id 
-    FROM person 
-    left join movie_cast as mc on person.person_id = mc.person_id 
-    WHERE person_name ILIKE $1 AND character_name IS NOT NULL
-    LIMIT ${String(limit)}`;
-
-    const acontains = 
-    `SELECT DISTINCT person_name, person.person_id
-    FROM person 
-    left join movie_cast as mc on person.person_id = mc.person_id 
-    WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 AND character_name IS NOT NULL
-    LIMIT ${String(limit)}`;
-
-    const s_values = [`${toSearch}%`];
-    const c_values = [`%${toSearch}%`, `${toSearch}%`];
-
-    try{
-        const response = await db.query(astart, s_values);
-        const response_c = await db.query(acontains, c_values);
-
-        return response.rows.concat(response_c.rows);
-
-    }catch(error) {
-        console.log(error);
-        return [];
-    }
-}
-
-async function getFormatedDirectorsForSearchValue(toSearch, limit = 100) {
-    const start = 
-    `select distinct person_name, person.person_id
-    from person
-    left join movie_crew as mc on person.person_id = mc.person_id
-    where job ilike '%director%' and person.person_name ilike $1
-    limit ${limit}`;
-
-    const contains = 
-    `select distinct person_name, person.person_id
-    from person
-    left join movie_crew as mc on person.person_id = mc.person_id
-    where job ilike '%director%' and person.person_name ilike $1 and NOT person.person_name ILIKE $2
-    limit ${limit}`;
-
-    const s_values = [`${toSearch}%`];
-    const c_values = [`%${toSearch}%`, `${toSearch}%`];
-
-    try{
-        const response = await db.query(start, s_values);
-        const response_c = await db.query(contains, c_values);
-
-        return response.rows.concat(response_c.rows);
-
-    }catch(error) {
-        console.log(error);
-        return [];
-    }
-}
-
-// Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
+
+// --- NUEVAS FUNCIONES DE BÚSQUEDA CON PAGINACIÓN SQL ---
+
+async function getPaginatedMovies(toSearch, limit, offset) {
+    // La lógica de prioridad se mantiene:
+    // 1: Títulos que empiezan con el término.
+    // 2: Títulos que contienen el término.
+    // 3: Relacionados (en overview o tagline).
+    const baseQuery = `
+        (SELECT *, 1 as priority FROM movie WHERE title ILIKE $1)
+        UNION ALL
+        (SELECT *, 2 as priority FROM movie WHERE title ILIKE $2 AND NOT title ILIKE $1)
+        UNION ALL
+        (SELECT *, 3 as priority FROM movie WHERE (overview ILIKE $3 OR tagline ILIKE $3) AND NOT title ILIKE $1)
+    `;
+
+    const query = `SELECT * FROM (${baseQuery}) as results ORDER BY priority, title LIMIT $4 OFFSET $5`;
+    const countQuery = `SELECT COUNT(*) FROM (${baseQuery}) as results`;
+
+    const values = [`${toSearch}%`, `%${toSearch}%`, `% ${toSearch} %`];
+
+    try {
+        const resultsPromise = await db.query(query, [...values, limit, offset]);
+        const countPromise = await db.query(countQuery, values);
+        
+        return {
+            rows: resultsPromise.rows,
+            total: parseInt(countPromise.rows[0].count, 10) || 0
+        };
+    } catch (error) {
+        console.log(error);
+        return { rows: [], total: 0 };
+    }
+}
+
+async function getPaginatedPeople(toSearch, limit, offset, type = 'actor') {
+    const jobFilter = type === 'director' 
+        ? `JOIN movie_crew as mc on p.person_id = mc.person_id WHERE job ILIKE '%director%' AND`
+        : `JOIN movie_cast as mc on p.person_id = mc.person_id WHERE mc.character_name IS NOT NULL AND`;
+    
+    const baseQuery = `
+        (SELECT p.person_id, p.person_name, 1 as priority FROM person as p ${jobFilter} p.person_name ILIKE $1)
+        UNION ALL
+        (SELECT p.person_id, p.person_name, 2 as priority FROM person as p ${jobFilter} p.person_name ILIKE $2 AND NOT p.person_name ILIKE $1)
+    `;
+
+    const query = `SELECT * FROM (SELECT DISTINCT person_id, person_name, priority FROM (${baseQuery}) as u) as results ORDER BY priority, person_name LIMIT $3 OFFSET $4`;
+    const countQuery = `SELECT COUNT(DISTINCT person_id) FROM (${baseQuery}) as results`;
+
+    const values = [`${toSearch}%`, `%${toSearch}%`];
+    
+    try {
+        const results = await db.query(query, [...values, limit, offset]);
+        const count = await db.query(countQuery, values);
+        
+        return {
+            rows: results.rows,
+            total: parseInt(count.rows[0].count, 10) || 0
+        };
+    } catch (error) {
+        console.log(error);
+        return { rows: [], total: 0 };
+    }
+}
+
+// En tu app.js
+
+app.get('/buscar', async (req, res) => {
+    const searchTerm = req.query.q || '';
+    // Esta línea es clave: define la variable 'activeTab' a partir de la URL o le da un valor por defecto.
+    const activeTab = req.query.tab || 'peliculas'; 
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const offset = (page - 1) * limit;
+
+    // ... (la lógica para determinar los offsets) ...
+    const moviesOffset = (activeTab === 'peliculas') ? offset : 0;
+    const actorsOffset = (activeTab === 'actores') ? offset : 0;
+    const directorsOffset = (activeTab === 'directores') ? offset : 0;
+
+    // ... (las llamadas a las funciones de búsqueda) ...
+    const moviesData = await getPaginatedMovies(searchTerm, limit, moviesOffset);
+    const actorsData = await getPaginatedPeople(searchTerm, limit, actorsOffset, 'actor');
+    const directorsData = await getPaginatedPeople(searchTerm, limit, directorsOffset, 'director');
+    // ✅ ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ PRESENTE
+    // Aquí es donde le pasas la variable 'activeTab' a tu plantilla EJS.
+    res.render('resultado', {
+        toSearch: searchTerm,
+        activeTab: activeTab, // <--- ¡Esta es la línea que falta o es incorrecta!
+        movies: { 
+            rows: moviesData.rows, 
+            totalPages: Math.ceil(moviesData.total / limit) 
+        },
+        actors: { 
+            rows: actorsData.rows, 
+            totalPages: Math.ceil(actorsData.total / limit) 
+        },
+        directors: { 
+            rows: directorsData.rows, 
+            totalPages: Math.ceil(directorsData.total / limit) 
+        },
+        currentPage: page,
+    });
+});
 
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
     res.render('index');
-});
-
-// Ruta para buscar películas en la base de datos PostgreSQL
-app.get('/buscar', async (req, res) => { // 4. Convertir a función async
-    const searchTerm = req.query.q;
-    const limit = 100;
-
-    try {
-        const response_movies = await getFormatedMoviesForSearchValue(searchTerm);
-        const response_actors = await getFormatedActorsForSearchValue(searchTerm);
-        const response_directors = await getFormatedDirectorsForSearchValue(searchTerm);
-
-        // if the search term is nothing show the first 100s and sorted
-        if (searchTerm.length <= 0) {
-            response_movies.sort((a, b) => a.title < b.title ? -1 : a.title == b.title ? 0 : 1)
-            response_actors.sort((a, b) => a.person_name < b.person_name ? -1 : a.person_name == b.person_name ? 0 : 1)
-            response_directors.sort((a, b) => a.person_name < b.person_name ? -1 : a.person_name == b.person_name ? 0 : 1)
-        }
-
-        res.render('resultado', { 
-            toSearch: searchTerm,
-            movies: response_movies,
-            actors: response_actors,
-            directors: response_directors,
-        });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error en la búsqueda.');
-    }
 });
 
 // Ruta para la página de datos de una película particular (PostgreSQL)
