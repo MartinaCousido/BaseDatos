@@ -35,7 +35,7 @@ async function getFormatedMoviesForSearchValue(toSearch, limit = 100 ) {
     const contains = `SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ` + String(limit); // ILIKE es case-insensitive en Postgres
     
     const has_actor = 
-    `SELECT m.title
+    `SELECT *
     FROM movie m
     JOIN movie_cast mc ON m.movie_id = mc.movie_id
     join person p on p.person_id = mc.person_id
