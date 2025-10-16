@@ -30,7 +30,7 @@
 
     <div class="tabs-container">
       <div class="tab-nav">
-        <button class="tab-button <%= !(movies.byTitle.length + movies.related.length) || !(movies.byTitle.length + movies.related.length) && !actors.length && !directors.length ? '' : 'active' %> " data-tab="peliculas">
+        <button class="tab-button <%= !(movies.byTitle.length + movies.related.length) && !actors.length && !directors.length ? 'active' : !(movies.byTitle.length + movies.related.length) ? '' : 'active' %> " data-tab="peliculas">
           Películas (<%= movies.byTitle.length + movies.related.length %>)
         </button>
         <button class="tab-button <%= !(movies.byTitle.length + movies.related.length) && actors.length ? 'active' : '' %>" data-tab="actores">
@@ -43,7 +43,7 @@
 
       <div class="tab-content">
         <div id="peliculas-panel" class="tab-panel active">
-          <% if (movies.length === 0) { %>
+          <% if (movies.byTitle.length === 0 && movies.related.length === 0) { %>
           <p class="no-results">No se encontraron películas.</p>
           <% } else { %>
           <div class="results-grid">
