@@ -30,13 +30,13 @@
 
     <div class="tabs-container">
       <div class="tab-nav">
-        <button class="tab-button active" data-tab="peliculas">
+        <button class="tab-button <%= !movies.length || !movies.length && !actors.length && !directors.length ? '' : 'active' %> " data-tab="peliculas">
           Películas (<%= movies.length %>)
         </button>
-        <button class="tab-button" data-tab="actores">
+        <button class="tab-button <%= !movies.length && actors.length ? 'active' : '' %>" data-tab="actores">
           Actores (<%= actors.length %>)
         </button>
-        <button class="tab-button" data-tab="directores">
+        <button class="tab-button <%= !movies.length && !actors.length && directors.length%>" data-tab="directores">
           Directores (<%= directors.length %>)
         </button>
       </div>
@@ -111,6 +111,14 @@
       document.addEventListener("DOMContentLoaded", () => {
         const tabButtons = document.querySelectorAll(".tab-button");
         const tabPanels = document.querySelectorAll(".tab-panel");
+        
+        tabButtons.forEach((button) => {
+          const targetPanelId = button.dataset.tab + "-panel";
+          if (button.classList.contains('active')) 
+            document.getElementById(targetPanelId).classList.add("active");
+          else 
+            document.getElementById(targetPanelId).classList.remove("active");
+        })
 
         tabButtons.forEach((button) => {
           button.addEventListener("click", () => {
