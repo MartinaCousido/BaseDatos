@@ -30,13 +30,13 @@
 
     <div class="tabs-container">
       <div class="tab-nav">
-        <button class="tab-button <%= !movies.length || !movies.length && !actors.length && !directors.length ? '' : 'active' %> " data-tab="peliculas">
-          Películas (<%= movies.length %>)
+        <button class="tab-button <%= !(movies.byTitle.length + movies.related.length) || !(movies.byTitle.length + movies.related.length) && !actors.length && !directors.length ? '' : 'active' %> " data-tab="peliculas">
+          Películas (<%= movies.byTitle.length + movies.related.length %>)
         </button>
-        <button class="tab-button <%= !movies.length && actors.length ? 'active' : '' %>" data-tab="actores">
+        <button class="tab-button <%= !(movies.byTitle.length + movies.related.length) && actors.length ? 'active' : '' %>" data-tab="actores">
           Actores (<%= actors.length %>)
         </button>
-        <button class="tab-button <%= !movies.length && !actors.length && directors.length%>" data-tab="directores">
+        <button class="tab-button <%= !(movies.byTitle.length + movies.related.length) && !actors.length && directors.length%>" data-tab="directores">
           Directores (<%= directors.length %>)
         </button>
       </div>
@@ -47,7 +47,7 @@
           <p class="no-results">No se encontraron películas.</p>
           <% } else { %>
           <div class="results-grid">
-            <% movies.forEach((movie) => { %>
+            <% movies.byTitle.forEach((movie) => { %>
             <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
               <img
                 class="card-img"
@@ -56,6 +56,19 @@
               />
               <div class="card-info">
                 <h3 class="card-title"><%= movie.title %></h3>
+              </div>
+            </a>
+            <% }); %>
+            <% movies.related.forEach((movie) => { %>
+            <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
+              <img
+                class="card-img"
+                src="/imgs/poster.jpg"
+                alt="Poster de <%= movie.title %>"
+              />
+              <div class="card-info">
+                <h3 class="card-title"><%= movie.title %></h3>
+                <span>Relacionado</span>
               </div>
             </a>
             <% }); %>

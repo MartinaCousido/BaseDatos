@@ -38,15 +38,20 @@ async function getFormatedMoviesForSearchValue(toSearch, limit = 100 ) {
     try{
         const response = await db.query(start, [`${toSearch}%`]);
         const response_c = await db.query(contains, [`%${toSearch}%`, `${toSearch}%`]);
-        const response_r = await db.query(review, [`% ${toSearch} %`, `${toSearch}%`]);
+        const response_r = await db.query(review, [`% ${toSearch} %`, `%${toSearch}%`]);
         
         response.rows = response.rows.concat(response_c.rows);
-
-        return response.rows.concat(response_r.rows);
+        return {
+            byTitle: response.rows,
+            related: response_r.rows,
+        };
 
     }catch(error) {
         console.log(error);
-        return [];
+        return {
+            byTitle: [],
+            related: []
+        };
     }
 }
 
