@@ -15,113 +15,80 @@ const db = new Pool({
     database: process.env.DB_DATABASE,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,    
-    options: `-c search_path=movies,public`, //modificar options de acuerdo al nombre del esquema
+    options: `-c search_path=movies,public`,
 });
 
 app.set('view engine', 'ejs');
 
-// --- NUEVAS FUNCIONES DE BÚSQUEDA CON PAGINACIÓN SQL ---
+// --- FUNCIONES QUE TRAEN TODOS LOS RESULTADOS (SIN PAGINACIÓN) ---
 
-async function getPaginatedMovies(toSearch, limit, offset) {
-    // La lógica de prioridad se mantiene:
-    // 1: Títulos que empiezan con el término.
-    // 2: Títulos que contienen el término.
-    // 3: Relacionados (en overview o tagline).
-    const baseQuery = `
+async function getMoviesForSearch(toSearch) {
+    // Usamos UNION ALL con prioridad, pero sin LIMIT/OFFSET para traer todo
+    const query = `
         (SELECT *, 1 as priority FROM movie WHERE title ILIKE $1)
         UNION ALL
         (SELECT *, 2 as priority FROM movie WHERE title ILIKE $2 AND NOT title ILIKE $1)
         UNION ALL
         (SELECT *, 3 as priority FROM movie WHERE (overview ILIKE $3 OR tagline ILIKE $3) AND NOT title ILIKE $1)
+        ORDER BY priority, title
     `;
-
-    const query = `SELECT * FROM (${baseQuery}) as results ORDER BY priority, title LIMIT $4 OFFSET $5`;
-    const countQuery = `SELECT COUNT(*) FROM (${baseQuery}) as results`;
-
     const values = [`${toSearch}%`, `%${toSearch}%`, `% ${toSearch} %`];
-
     try {
-        const resultsPromise = await db.query(query, [...values, limit, offset]);
-        const countPromise = await db.query(countQuery, values);
-        
-        return {
-            rows: resultsPromise.rows,
-            total: parseInt(countPromise.rows[0].count, 10) || 0
-        };
+        const results = await db.query(query, values);
+        return results.rows;
     } catch (error) {
         console.log(error);
-        return { rows: [], total: 0 };
+        return [];
     }
 }
 
-async function getPaginatedPeople(toSearch, limit, offset, type = 'actor') {
+async function getPeopleForSearch(toSearch, type = 'actor') {
     const jobFilter = type === 'director' 
         ? `JOIN movie_crew as mc on p.person_id = mc.person_id WHERE job ILIKE '%director%' AND`
         : `JOIN movie_cast as mc on p.person_id = mc.person_id WHERE mc.character_name IS NOT NULL AND`;
     
-    const baseQuery = `
-        (SELECT p.person_id, p.person_name, 1 as priority FROM person as p ${jobFilter} p.person_name ILIKE $1)
-        UNION ALL
-        (SELECT p.person_id, p.person_name, 2 as priority FROM person as p ${jobFilter} p.person_name ILIKE $2 AND NOT p.person_name ILIKE $1)
+    const query = `
+        SELECT * FROM (
+            SELECT DISTINCT person_id, person_name, priority FROM (
+                (SELECT p.person_id, p.person_name, 1 as priority FROM person as p ${jobFilter} p.person_name ILIKE $1)
+                UNION ALL
+                (SELECT p.person_id, p.person_name, 2 as priority FROM person as p ${jobFilter} p.person_name ILIKE $2 AND NOT p.person_name ILIKE $1)
+            ) as u
+        ) as results 
+        ORDER BY priority, person_name
     `;
-
-    const query = `SELECT * FROM (SELECT DISTINCT person_id, person_name, priority FROM (${baseQuery}) as u) as results ORDER BY priority, person_name LIMIT $3 OFFSET $4`;
-    const countQuery = `SELECT COUNT(DISTINCT person_id) FROM (${baseQuery}) as results`;
-
     const values = [`${toSearch}%`, `%${toSearch}%`];
-    
     try {
-        const results = await db.query(query, [...values, limit, offset]);
-        const count = await db.query(countQuery, values);
-        
-        return {
-            rows: results.rows,
-            total: parseInt(count.rows[0].count, 10) || 0
-        };
+        const results = await db.query(query, values);
+        return results.rows;
     } catch (error) {
         console.log(error);
-        return { rows: [], total: 0 };
+        return [];
     }
 }
 
-// En tu app.js
-
+// --- RUTA DE BÚSQUEDA (SIMPLE Y EFICIENTE) ---
 app.get('/buscar', async (req, res) => {
     const searchTerm = req.query.q || '';
-    // Esta línea es clave: define la variable 'activeTab' a partir de la URL o le da un valor por defecto.
-    const activeTab = req.query.tab || 'peliculas'; 
-    const page = parseInt(req.query.page) || 1;
-    const limit = 20;
-    const offset = (page - 1) * limit;
 
-    // ... (la lógica para determinar los offsets) ...
-    const moviesOffset = (activeTab === 'peliculas') ? offset : 0;
-    const actorsOffset = (activeTab === 'actores') ? offset : 0;
-    const directorsOffset = (activeTab === 'directores') ? offset : 0;
+    try {
+        // Obtenemos las listas completas de resultados
+        const moviesData = await getMoviesForSearch(searchTerm);
+        const actorsData = await getPeopleForSearch(searchTerm, 'actor');
+        const directorsData = await getPeopleForSearch(searchTerm, 'director');
 
-    // ... (las llamadas a las funciones de búsqueda) ...
-    const moviesData = await getPaginatedMovies(searchTerm, limit, moviesOffset);
-    const actorsData = await getPaginatedPeople(searchTerm, limit, actorsOffset, 'actor');
-    const directorsData = await getPaginatedPeople(searchTerm, limit, directorsOffset, 'director');
-    // ✅ ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ PRESENTE
-    // Aquí es donde le pasas la variable 'activeTab' a tu plantilla EJS.
-    res.render('resultado', {
-        toSearch: searchTerm,
-        activeTab: activeTab, // <--- ¡Esta es la línea que falta o es incorrecta!
-        movies: { 
-            rows: moviesData.rows, 
-            totalPages: Math.ceil(moviesData.total / limit) 
-        },
-        actors: { 
-            rows: actorsData.rows, 
-            totalPages: Math.ceil(actorsData.total / limit) 
-        },
-        directors: { 
-            rows: directorsData.rows, 
-            totalPages: Math.ceil(directorsData.total / limit) 
-        },
-        currentPage: page,
-    });
+        // Las enviamos a la plantilla
+        res.render('resultado', { 
+            toSearch: searchTerm,
+            movies: moviesData,
+            actors: actorsData,
+            directors: directorsData,
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error en la búsqueda.');
+    }
 });
 
 // Ruta para la página de inicio

@@ -28,177 +28,148 @@
     </nav>
 
     <div class="tabs-container">
-    <div class="tab-nav">
-      <a href="/buscar?q=<%= toSearch %>&tab=peliculas" class="tab-button" data-tab="peliculas">Películas</a>
-      <a href="/buscar?q=<%= toSearch %>&tab=actores" class="tab-button" data-tab="actores">Actores</a>
-      <a href="/buscar?q=<%= toSearch %>&tab=directores" class="tab-button" data-tab="directores">Directores</a>
-    </div>
+      <div class="tab-nav">
+        <button class="tab-button" data-tab="peliculas">Películas</button>
+        <button class="tab-button" data-tab="actores">Actores</button>
+        <button class="tab-button" data-tab="directores">Directores</button>
+      </div>
 
       <div class="tab-content">
         <div id="peliculas-panel" class="tab-panel">
-          <% if (movies.rows.length === 0) { %>
-          <p class="no-results">No se encontraron películas.</p>
-          <% } else { %>
-          <div class="results-grid">
-            <% movies.rows.forEach(movie => { %>
-            <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
-              <img
-                class="card-img"
-                src="/imgs/poster.jpg"
-                alt="Poster de <%= movie.title %>"
-              />
-              <div class="card-info">
-                <h3 class="card-title"><%= movie.title %></h3>
-                <% if (movie.priority == 3) {%>
-                  <span>Relacionado</span>
-                <%}%>
-              </div>
-            </a>
-            <% }); %>
-          </div>
-          <% if (movies.totalPages > 1) { %>
-          <div class="pagination">
-            <a
-              href="/buscar?q=<%= toSearch %>&page=<%= currentPage - 1 %>&tab=peliculas"
-              class="page-link <%= currentPage === 1 ? 'disabled' : '' %>"
-              ><</a
-            >
-            <% if (movies.totalPages > 10) { %>
-            <span class="page-info"
-              >Página <%= currentPage %> de <%= movies.totalPages %></span
-            >
-            <% } else { %> <% for (let i = 1; i <= movies.totalPages; i++) { %>
-            <a
-              href="/buscar?q=<%= toSearch %>&page=<%= i %>&tab=peliculas"
-              class="page-link <%= i === currentPage ? 'active' : '' %>"
-              ><%= i %></a
-            >
-            <% } %> <% } %>
-            <a
-              href="/buscar?q=<%= toSearch %>&page=<%= currentPage + 1 %>&tab=peliculas"
-              class="page-link <%= currentPage >= movies.totalPages ? 'disabled' : '' %>"
-              >></a
-            >
-          </div>
-          <% } %> <% } %>
+          <div class="results-grid" id="movies-grid"></div>
+          <div class="pagination" id="movies-pagination"></div>
         </div>
-
         <div id="actores-panel" class="tab-panel">
-          <% if (actors.rows.length === 0) { %>
-          <p class="no-results">No se encontraron actores.</p>
-          <% } else { %>
-          <div class="results-grid">
-            <% actors.rows.forEach(actor => { %>
-            <a href="/actor/<%= actor.person_id %>" class="result-card">
-              <img
-                class="card-img"
-                src="/imgs/Tom_Hanks.jpg"
-                alt="Foto de <%= actor.person_name %>"
-              />
-              <div class="card-info">
-                <h3 class="card-title"><%= actor.person_name %></h3>
-              </div>
-            </a>
-            <% }); %>
-          </div>
-          <% if (actors.totalPages > 1) { %>
-          <div class="pagination">
-            <a
-              href="/buscar?q=<%= toSearch %>&page=<%= currentPage - 1 %>&tab=actores"
-              class="page-link <%= currentPage === 1 ? 'disabled' : '' %>"
-              ><</a
-            >
-            <% if (actors.totalPages > 10) { %>
-            <span class="page-info"
-              >Página <%= currentPage %> de <%= actors.totalPages %></span
-            >
-            <% } else { %> <% for (let i = 1; i <= actors.totalPages; i++) { %>
-            <a
-              href="/buscar?q=<%= toSearch %>&page=<%= i %>&tab=actores"
-              class="page-link <%= i === currentPage ? 'active' : '' %>"
-              ><%= i %></a
-            >
-            <% } %> <% } %>
-            <a
-              href="/buscar?q=<%= toSearch %>&page=<%= currentPage + 1 %>&tab=actores"
-              class="page-link <%= currentPage >= actors.totalPages ? 'disabled' : '' %>"
-              >></a
-            >
-          </div>
-          <% } %> <% } %>
+          <div class="results-grid" id="actors-grid"></div>
+          <div class="pagination" id="actors-pagination"></div>
         </div>
-
         <div id="directores-panel" class="tab-panel">
-          <% if (directors.rows.length === 0) { %>
-          <p class="no-results">No se encontraron directores.</p>
-          <% } else { %>
-          <div class="results-grid">
-            <% directors.rows.forEach(director => { %>
-            <a href="/director/<%= director.person_id %>" class="result-card">
-              <img
-                class="card-img"
-                src="/imgs/Tom_Hanks.jpg"
-                alt="Foto de <%= director.person_name %>"
-              />
-              <div class="card-info">
-                <h3 class="card-title"><%= director.person_name %></h3>
-              </div>
-            </a>
-            <% }); %>
-          </div>
-          <% if (directors.totalPages > 1) { %>
-          <div class="pagination">
-            <a
-              href="/buscar?q=<%= toSearch %>&page=<%= currentPage - 1 %>&tab=directores"
-              class="page-link <%= currentPage === 1 ? 'disabled' : '' %>"
-              ><</a
-            >
-            <% if (directors.totalPages > 10) { %>
-            <span class="page-info"
-              >Página <%= currentPage %> de <%= directors.totalPages %></span
-            >
-            <% } else { %> <% for (let i = 1; i <= directors.totalPages; i++) {
-            %>
-            <a
-              href="/buscar?q=<%= toSearch %>&page=<%= i %>&tab=directores"
-              class="page-link <%= i === currentPage ? 'active' : '' %>"
-              ><%= i %></a
-            >
-            <% } %> <% } %>
-            <a
-              href="/buscar?q=<%= toSearch %>&page=<%= currentPage + 1 %>&tab=directores"
-              class="page-link <%= currentPage >= directors.totalPages ? 'disabled' : '' %>"
-              >></a
-            >
-          </div>
-          <% } %> <% } %>
+          <div class="results-grid" id="directors-grid"></div>
+          <div class="pagination" id="directors-pagination"></div>
         </div>
       </div>
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const tabButtons = document.querySelectorAll(".tab-button");
-        const tabPanels = document.querySelectorAll(".tab-panel");
-        const activeTabName =
-          '<%= typeof activeTab !== "undefined" ? activeTab : "peliculas" %>';
+      document.addEventListener('DOMContentLoaded', () => {
+          // --- 1. OBTENER TODOS LOS DATOS DEL SERVIDOR ---
+          const allMovies = <%- JSON.stringify(movies) %>;
+          const allActors = <%- JSON.stringify(actors) %>;
+          const allDirectors = <%- JSON.stringify(directors) %>;
+          const resultsPerPage = 20;
 
-        // Función para cambiar de pestaña
-        function switchTab(tabName) {
-          tabButtons.forEach((btn) => btn.classList.remove("active"));
-          tabPanels.forEach((panel) => panel.classList.remove("active"));
+          // --- 2. DEFINIR EL ESTADO INICIAL DE LA APLICACIÓN ---
+          const state = {
+              activeTab: 'peliculas', // Se actualizará en el renderizado inicial
+              peliculas: { data: allMovies, currentPage: 1, grid: document.getElementById('movies-grid'), pag: document.getElementById('movies-pagination') },
+              actores: { data: allActors, currentPage: 1, grid: document.getElementById('actors-grid'), pag: document.getElementById('actors-pagination') },
+              directores: { data: allDirectors, currentPage: 1, grid: document.getElementById('directors-grid'), pag: document.getElementById('directors-pagination') }
+          };
 
-          const buttonToActivate = document.querySelector(
-            `.tab-button[data-tab="${tabName}"]`
-          );
-          const panelToActivate = document.getElementById(`${tabName}-panel`);
+          // --- 3. FUNCIÓN PRINCIPAL PARA RENDERIZAR LA VISTA ---
+          function render() {
+              const tab = state[state.activeTab];
+              const totalPages = Math.ceil(tab.data.length / resultsPerPage);
 
-          if (buttonToActivate) buttonToActivate.classList.add("active");
-          if (panelToActivate) panelToActivate.classList.add("active");
-        }
+              // Limpiar contenedores
+              tab.grid.innerHTML = '';
+              tab.pag.innerHTML = '';
 
-        // Activar la pestaña correcta al cargar la página
-        switchTab(activeTabName);
+              // Mostrar mensaje si no hay resultados
+              if (tab.data.length === 0) {
+                  tab.grid.innerHTML = `<p class="no-results">No se encontraron ${state.activeTab}.</p>`;
+                  return;
+              }
+
+              // Renderizar la grilla de resultados para la página actual
+              const start = (tab.currentPage - 1) * resultsPerPage;
+              const end = start + resultsPerPage;
+              const paginatedItems = tab.data.slice(start, end);
+
+              for (const item of paginatedItems) {
+                  let cardHTML = '';
+                  if (state.activeTab === 'peliculas') {
+                      const relacionadoSpan = item.priority === 3 ? '<span>Relacionado</span>' : '';
+                      cardHTML = `
+                          <a href="/pelicula/${item.movie_id}" class="result-card">
+                              <img class="card-img" src="/imgs/poster.jpg"/>
+                              <div class="card-info">
+                                  <h3 class="card-title">${item.title}</h3>
+                                  ${relacionadoSpan}
+                              </div>
+                          </a>`;
+                  } else {
+                      const personType = state.activeTab === 'actores' ? 'actor' : 'director';
+                      cardHTML = `
+                          <a href="/${personType}/${item.person_id}" class="result-card">
+                              <img class="card-img" src="/imgs/Tom_Hanks.jpg"/>
+                              <div class="card-info">
+                                  <h3 class="card-title">${item.person_name}</h3>
+                              </div>
+                          </a>`;
+                  }
+                  tab.grid.innerHTML += cardHTML;
+              }
+
+              // Renderizar los controles de paginación
+              if (totalPages > 1) {
+                  tab.pag.innerHTML += `<button class="page-link ${tab.currentPage === 1 ? 'disabled' : ''}" data-page="${tab.currentPage - 1}"><<</button>`;
+
+                  if (totalPages > 10) {
+                      tab.pag.innerHTML += `<span class="page-info">Página ${tab.currentPage} de ${totalPages}</span>`;
+                  } else {
+                      for (let i = 1; i <= totalPages; i++) {
+                          tab.pag.innerHTML += `<button class="page-link ${i === tab.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                      }
+                  }
+
+                  tab.pag.innerHTML += `<button class="page-link ${tab.currentPage >= totalPages ? 'disabled' : ''}" data-page="${tab.currentPage + 1}">>></button>`;
+              }
+          }
+
+          // --- 4. MANEJO DE EVENTOS ---
+          const tabButtons = document.querySelectorAll(".tab-button");
+          const tabPanels = document.querySelectorAll(".tab-panel");
+
+          tabButtons.forEach(button => {
+              button.addEventListener('click', () => {
+                  state.activeTab = button.dataset.tab;
+                  state[state.activeTab].currentPage = 1;
+
+                  tabButtons.forEach(btn => btn.classList.remove('active'));
+                  tabPanels.forEach(panel => panel.classList.remove('active'));
+                  button.classList.add('active');
+                  document.getElementById(`${state.activeTab}-panel`).classList.add('active');
+                  render();
+              });
+          });
+
+          document.querySelector('.tab-content').addEventListener('click', (e) => {
+              if (e.target.matches('.page-link') && !e.target.matches('.disabled')) {
+                  const page = parseInt(e.target.dataset.page, 10);
+                  state[state.activeTab].currentPage = page;
+                  render();
+              }
+          });
+
+          // --- 5. RENDERIZADO INICIAL ---
+          // Actualizar los contadores en las pestañas
+          document.querySelector('.tab-button[data-tab="peliculas"]').innerHTML += ` (${allMovies.length})`;
+          document.querySelector('.tab-button[data-tab="actores"]').innerHTML += ` (${allActors.length})`;
+          document.querySelector('.tab-button[data-tab="directores"]').innerHTML += ` (${allDirectors.length})`;
+
+          // ✅ NUEVA LÓGICA PARA DECIDIR LA PESTAÑA INICIAL
+          let initialTab = 'peliculas'; // Por defecto, empezamos con películas
+
+          if (allMovies.length === 0) {
+              initialTab = 'actores'; // Si no hay películas, probamos con actores
+          }
+          if (allMovies.length === 0 && allActors.length === 0) {
+              initialTab = 'directores'; // Si tampoco hay actores, probamos con directores
+          }
+
+          // Activar la pestaña determinada y renderizar
+          document.querySelector(`.tab-button[data-tab="${initialTab}"]`).click();
       });
     </script>
   </body>
