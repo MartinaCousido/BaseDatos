@@ -31,21 +31,28 @@ const db = new Pool({
 });
 
 async function getFormatedMoviesForSearchValue(toSearch, limit = 100 ) {
-    const mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const review = 'SELECT * FROM movie WHERE (overview ILIKE $1 OR tagline ILIKE $1) AND NOT title ILIKE $2 LIMIT ' + String(limit);
-    const mcontains = `SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ` + String(limit); // ILIKE es case-insensitive en Postgres
+    const start = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
+    const contains = `SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ` + String(limit); // ILIKE es case-insensitive en Postgres
+    
+    const has_actor = 
+    `SELECT m.title
+    FROM movie m
+    JOIN movie_cast mc ON m.movie_id = mc.movie_id
+    join person p on p.person_id = mc.person_id
+    WHERE p.person_name ilike $1
+    LIMIT
+    ` + String(limit);
 
-    const s_values = [`${toSearch}%`];
-    const c_values = [`%${toSearch}%`, `${toSearch}%`];
+    // const review = 'SELECT * FROM movie WHERE (overview ILIKE $1 OR tagline ILIKE $1) AND NOT title ILIKE $2 LIMIT ' + String(limit);
 
     try{
-        const response = await db.query(mstart, s_values);
-        const response_r = await db.query(review, [`%${toSearch}%`, `${toSearch}%`]);
-        const response_c = await db.query(mcontains, c_values);
+        const response = await db.query(start, [`${toSearch}%`]);
+        const response_a = await db.query(has_actor, [`${toSearch}%`]);
+        const response_c = await db.query(contains, [`%${toSearch}%`, `${toSearch}%`]);
         
         response.rows = response.rows.concat(response_c.rows);
 
-        return response.rows.concat(response_r.rows);
+        return response.rows.concat(response_a.rows);
 
     }catch(error) {
         console.log(error);
