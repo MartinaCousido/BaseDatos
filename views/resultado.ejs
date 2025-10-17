@@ -14,7 +14,7 @@
     <div class="results-grid">
       <% movies.forEach((movie) => { %>
       <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
-        <img class="card-img" src="./imgs/poster.jpg" alt="" />
+        <img class="card-img" src="/imgs/poster.jpg" alt="" />
         <div class="card-info">
           <h3 class="card-title"><%= movie.title %></h3>
           <span class="card-tagline"><%= movie.tagline %></span>

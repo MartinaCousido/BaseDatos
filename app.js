@@ -30,6 +30,25 @@ const db = new Pool({
     options: `-c search_path=movies,public`, //modificar options de acuerdo al nombre del esquema
 });
 
+async function getMoviesByGenre(genre) {
+    try {
+        const response = await db.query(
+            `
+            select m.*
+            from genre
+            join movie_genres as mg on genre.genre_id = mg.genre_id
+            join movie as m on mg.movie_id = m.movie_id
+            where genre.genre_name ilike $1;
+            `, [`${genre}`]
+        );
+
+        return response.rows;
+    } catch(error) {
+        console.log(error);
+        return [];
+    }
+}
+
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
@@ -37,6 +56,22 @@ app.set('view engine', 'ejs');
 app.get('/', (req, res) => {
     res.render('index');
 });
+
+app.get('/buscar/:genre', async (req, res) => {
+    const genreToSearch = req.params.genre;
+    console.log(genreToSearch)
+    try{
+        const response = await getMoviesByGenre(genreToSearch);
+        console.log(response)
+        res.render('resultado', {
+            movies: response,
+            actors: []
+        })
+    }catch ( error ) {
+        console.log(error);
+        res.status(500).send('Error en la busqueda.')
+    }
+})
 
 // Ruta para buscar películas en la base de datos PostgreSQL
 app.get('/buscar', async (req, res) => { // 4. Convertir a función async
