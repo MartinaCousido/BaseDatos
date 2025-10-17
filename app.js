@@ -34,8 +34,14 @@ const db = new Pool({
 app.set('view engine', 'ejs');
 
 // Ruta para la página de inicio
-app.get('/', (req, res) => {
-    res.render('index');
+app.get('/', async (req, res) => {
+    try{
+        const response = await db.query(`select movie.*, popularity from movie order by popularity desc limit 8`);
+        res.render('index', {movies: response.rows});
+    } catch(error) {
+        console.log(error)
+        res.render('index', {movies:[]})
+    }
 });
 
 // Ruta para buscar películas en la base de datos PostgreSQL
