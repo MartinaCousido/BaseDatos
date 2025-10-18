@@ -1,71 +1,99 @@
-// Se debe crear archivo .env con las variables de entorno de la base de datos
-// DB_USER=postgres
-// DB_PASSWORD=<password_de_la_base_de_datos>
-// DB_HOST=localhost
-// DB_PORT=5432
-// DB_DATABASE=movies
-
 require('dotenv').config();
 
 const express = require('express');
-
 const { Pool } = require('pg');
 
 const app = express();
 const port = process.env.PORT || 3500;
 
-// Serve static files from the "views" directory
 app.use(express.static('views'));
-
-// Servir archivos estáticos (CSS, JS del cliente) desde la carpeta 'public'
 app.use(express.static('public'));
 
-// Crear un "pool" de conexiones a PostgreSQL usando las variables de entorno
 const db = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_DATABASE,
     password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-    options: `-c search_path=movies,public`, //modificar options de acuerdo al nombre del esquema
+    port: process.env.DB_PORT,    
+    options: `-c search_path=movies,public`,
 });
 
-// Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
-// Ruta para la página de inicio
-app.get('/', (req, res) => {
-    res.render('index');
-});
+// --- FUNCIONES QUE TRAEN TODOS LOS RESULTADOS (SIN PAGINACIÓN) ---
 
-// Ruta para buscar películas en la base de datos PostgreSQL
-app.get('/buscar', async (req, res) => { // 4. Convertir a función async
-    const searchTerm = req.query.q;
-    const limit = 100;
+async function getMoviesForSearch(toSearch) {
+    // Usamos UNION ALL con prioridad, pero sin LIMIT/OFFSET para traer todo
+    const query = `
+        (SELECT *, 1 as priority FROM movie WHERE title ILIKE $1)
+        UNION ALL
+        (SELECT *, 2 as priority FROM movie WHERE title ILIKE $2 AND NOT title ILIKE $1)
+        UNION ALL
+        (SELECT *, 3 as priority FROM movie WHERE (overview ILIKE $3 OR tagline ILIKE $3) AND NOT title ILIKE $1)
+        ORDER BY priority, title
+    `;
+    const values = [`${toSearch}%`, `%${toSearch}%`, `% ${toSearch} %`];
+    try {
+        const results = await db.query(query, values);
+        return results.rows;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
 
-    // Los placeholders en pg son $1, $2, etc.
-    const query_mstart = 'SELECT * FROM movie WHERE title ILIKE $1 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const query_mcontains = 'SELECT * FROM movie WHERE title ILIKE $1 AND NOT title ILIKE $2 LIMIT ' + String(limit); // ILIKE es case-insensitive en Postgres
-    const query_astart = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 LIMIT ' + String(limit);
-    const query_acontains = 'SELECT DISTINCT person_name, person.person_id FROM person left join movie_cast as mc on person.person_id = mc.person_id WHERE person_name ILIKE $1 AND NOT person_name ILIKE $2 LIMIT ' + String(limit);
-    const s_values = [`${searchTerm}%`];
-    const c_values = [`%${searchTerm}%`, `${searchTerm}%`];
+async function getPeopleForSearch(toSearch, type = 'actor') {
+    const jobFilter = type === 'director' 
+        ? `JOIN movie_crew as mc on p.person_id = mc.person_id WHERE job ILIKE '%director%' AND`
+        : `JOIN movie_cast as mc on p.person_id = mc.person_id WHERE mc.character_name IS NOT NULL AND`;
+    
+    const query = `
+        SELECT * FROM (
+            SELECT DISTINCT person_id, person_name, priority FROM (
+                (SELECT p.person_id, p.person_name, 1 as priority FROM person as p ${jobFilter} p.person_name ILIKE $1)
+                UNION ALL
+                (SELECT p.person_id, p.person_name, 2 as priority FROM person as p ${jobFilter} p.person_name ILIKE $2 AND NOT p.person_name ILIKE $1)
+            ) as u
+        ) as results 
+        ORDER BY priority, person_name
+    `;
+    const values = [`${toSearch}%`, `%${toSearch}%`];
+    try {
+        const results = await db.query(query, values);
+        return results.rows;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
+// --- RUTA DE BÚSQUEDA (SIMPLE Y EFICIENTE) ---
+app.get('/buscar', async (req, res) => {
+    const searchTerm = req.query.q || '';
 
     try {
-        const result_mstart = await db.query(query_mstart, s_values);
-        const result_mcontains = await db.query(query_mcontains, c_values);
-        const result_astart = await db.query(query_astart, s_values);
-        const result_acontains = await db.query(query_acontains, c_values)
+        // Obtenemos las listas completas de resultados
+        const moviesData = await getMoviesForSearch(searchTerm);
+        const actorsData = await getPeopleForSearch(searchTerm, 'actor');
+        const directorsData = await getPeopleForSearch(searchTerm, 'director');
 
+        // Las enviamos a la plantilla
         res.render('resultado', { 
-            movies: result_mstart.rows.concat(result_mcontains.rows),
-            actors: result_astart.rows.concat(result_acontains.rows),
+            toSearch: searchTerm,
+            movies: moviesData,
+            actors: actorsData,
+            directors: directorsData,
         });
 
     } catch (err) {
         console.error(err);
         res.status(500).send('Error en la búsqueda.');
     }
+});
+
+// Ruta para la página de inicio
+app.get('/', (req, res) => {
+    res.render('index');
 });
 
 // Ruta para la página de datos de una película particular (PostgreSQL)
@@ -206,12 +234,12 @@ app.get('/director/:id', async (req, res) => {
     const directorId = req.params.id;
     try {
         // Consulta: obtener nombre del director y las películas que dirigió
-        const directorResult = await db.query('SELECT name FROM person WHERE person_id = $1', [directorId]);
+        const directorResult = await db.query('SELECT person_name FROM person WHERE person_id = $1', [directorId]);
         const moviesResult = await db.query(`
             SELECT m.movie_id, m.title, m.release_date
-            FROM movie m
-            JOIN movie_directors md ON m.movie_id = md.movie_id
-            WHERE md.person_id = $1
+            from movie_crew as mc
+            left join movie as m on m.movie_id = mc.movie_id
+            where job ilike '%director%' and mc.person_id = $1
         `, [directorId]);
 
         const directorName = directorResult.rows[0]?.person_name || 'Director desconocido';
