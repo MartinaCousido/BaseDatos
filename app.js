@@ -97,7 +97,8 @@ app.get('/', (req, res) => {
 });
 
 // Ruta para la página de datos de una película particular (PostgreSQL)
-app.get('/pelicula/:id', async (req, res) => { // Convertir a async
+// Ruta para la página de datos de una película particular (PostgreSQL)
+app.get('/pelicula/:id', async (req, res) => {
     const movieId = req.params.id;
 
     const query = `
@@ -110,13 +111,28 @@ app.get('/pelicula/:id', async (req, res) => { // Convertir a async
       movie_cast.character_name,
       movie_cast.cast_order,
       department.department_name,
-      movie_crew.job
+      movie_crew.job,
+      country.country_name,
+      genre.genre_name,
+      language.language_code,
+      language.language_name,
+      language_role.language_role,
+      production_company.company_name
     FROM movie
     LEFT JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
     LEFT JOIN person as actor ON movie_cast.person_id = actor.person_id
     LEFT JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
     LEFT JOIN department ON movie_crew.department_id = department.department_id
     LEFT JOIN person as crew_member ON crew_member.person_id = movie_crew.person_id
+    LEFT JOIN production_country ON movie.movie_id = production_country.movie_id
+    LEFT JOIN country ON production_country.country_id = country.country_id
+    LEFT JOIN movie_genres ON movie.movie_id = movie_genres.movie_id
+    LEFT JOIN genre ON movie_genres.genre_id = genre.genre_id
+    LEFT JOIN movie_languages ON movie.movie_id = movie_languages.movie_id
+    LEFT JOIN language ON movie_languages.language_id = language.language_id
+    LEFT JOIN language_role ON movie_languages.language_role_id = language_role.role_id
+    LEFT JOIN movie_company ON movie.movie_id = movie_company.movie_id
+    LEFT JOIN production_company ON movie_company.company_id = production_company.company_id
     WHERE movie.movie_id = $1
   `;
 
@@ -138,8 +154,13 @@ app.get('/pelicula/:id', async (req, res) => { // Convertir a async
             writers: [],
             cast: [],
             crew: [],
+            countries: [],
+            genres: [],
+            originalLanguage: null,
+            productionCompanies: []
         };
 
+        // Procesar directores
         rows.forEach((row) => {
             if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
                 const isDuplicate = movieData.directors.some((crew_member) => crew_member.crew_member_id === row.crew_member_id);
@@ -154,10 +175,11 @@ app.get('/pelicula/:id', async (req, res) => { // Convertir a async
             }
         });
 
+        // Procesar escritores
         rows.forEach((row) => {
             if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
                 const isDuplicate = movieData.writers.some((crew_member) => crew_member.crew_member_id === row.crew_member_id);
-                if (!isDuplicate && row.department_name === 'Writing' && (row.job === 'Writer' || row.job === 'Screenplay')) { // Ajuste para más roles de escritura
+                if (!isDuplicate && row.department_name === 'Writing' && (row.job === 'Writer' || row.job === 'Screenplay')) {
                     movieData.writers.push({
                         crew_member_id: row.crew_member_id,
                         crew_member_name: row.crew_member_name,
@@ -168,6 +190,7 @@ app.get('/pelicula/:id', async (req, res) => { // Convertir a async
             }
         });
 
+        // Procesar elenco
         rows.forEach((row) => {
             if (row.actor_id && row.actor_name && row.character_name) {
                 const isDuplicate = movieData.cast.some((actor) => actor.actor_id === row.actor_id);
@@ -182,6 +205,7 @@ app.get('/pelicula/:id', async (req, res) => { // Convertir a async
             }
         });
 
+        // Procesar crew
         rows.forEach((row) => {
             if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
                 const isDuplicate = movieData.crew.some((crew_member) => crew_member.crew_member_id === row.crew_member_id);
@@ -198,6 +222,34 @@ app.get('/pelicula/:id', async (req, res) => { // Convertir a async
             }
         });
 
+        // Procesar países de producción
+        rows.forEach((row) => {
+            if (row.country_name && !movieData.countries.includes(row.country_name)) {
+                movieData.countries.push(row.country_name);
+            }
+        });
+
+        // Procesar géneros
+        rows.forEach((row) => {
+            if (row.genre_name && !movieData.genres.includes(row.genre_name)) {
+                movieData.genres.push(row.genre_name);
+            }
+        });
+
+        // Procesar idioma original (solo el que tenga el rol "Original")
+        rows.forEach((row) => {
+            if (row.language_name && row.language_role && row.language_role.toLowerCase().includes('original') && !movieData.originalLanguage) {
+                movieData.originalLanguage = row.language_name;
+            }
+        });
+
+        // Procesar compañías de producción
+        rows.forEach((row) => {
+            if (row.company_name && !movieData.productionCompanies.includes(row.company_name)) {
+                movieData.productionCompanies.push(row.company_name);
+            }
+        });
+
         res.render('pelicula', { movie: movieData });
 
     } catch (err) {
@@ -210,19 +262,53 @@ app.get('/pelicula/:id', async (req, res) => { // Convertir a async
 app.get('/actor/:id', async (req, res) => {
     const actorId = req.params.id;
     try {
-        // Consulta: obtener nombre del actor y las películas donde participó
-        const actorResult = await db.query('SELECT person_name FROM person WHERE person_id = $1', [actorId]);
-        const moviesResult = await db.query(`
-            SELECT m.movie_id, m.title, m.release_date
-            FROM movie m
-            JOIN movie_cast mc ON m.movie_id = mc.movie_id
-            WHERE mc.person_id = $1
+        // Consulta: obtener información completa del actor
+        const actorResult = await db.query(`
+            SELECT p.person_name
+            FROM person p
+            WHERE p.person_id = $1
         `, [actorId]);
         
-        const actorName = actorResult.rows[0]?.person_name || 'Actor desconocido';
+        // Consulta: obtener películas con personajes y género del personaje
+        const moviesResult = await db.query(`
+            SELECT m.movie_id, m.title, m.release_date, mc.character_name, g.gender
+            FROM movie m
+            JOIN movie_cast mc ON m.movie_id = mc.movie_id
+            LEFT JOIN gender g ON mc.gender_id = g.gender_id
+            WHERE mc.person_id = $1
+            ORDER BY m.release_date DESC
+        `, [actorId]);
+        
+        if (actorResult.rows.length === 0) {
+            return res.status(404).send('Actor no encontrado.');
+        }
+
+        const actorName = actorResult.rows[0].person_name;
         const movies = moviesResult.rows;
 
-        res.render('actor', { actorName, movies });
+        // Obtener el género más común del actor basado en sus personajes
+        const genders = movies.map(m => m.gender).filter(g => g);
+        const genderCount = {};
+        genders.forEach(g => {
+            genderCount[g] = (genderCount[g] || 0) + 1;
+        });
+        const mostCommonGender = Object.keys(genderCount).length > 0 
+            ? Object.keys(genderCount).reduce((a, b) => genderCount[a] > genderCount[b] ? a : b)
+            : 'No especificado';
+
+        // Traducir género
+        const genderTranslation = {
+            'Male': 'Masculino',
+            'Female': 'Femenino',
+            'Non-binary': 'No binario'
+        };
+        const translatedGender = genderTranslation[mostCommonGender] || mostCommonGender;
+
+        res.render('actor', { 
+            actorName, 
+            actorGender: translatedGender, 
+            movies 
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error al obtener información del actor');
@@ -233,16 +319,23 @@ app.get('/actor/:id', async (req, res) => {
 app.get('/director/:id', async (req, res) => {
     const directorId = req.params.id;
     try {
-        // Consulta: obtener nombre del director y las películas que dirigió
+        // Consulta: obtener nombre del director
         const directorResult = await db.query('SELECT person_name FROM person WHERE person_id = $1', [directorId]);
+        
+        // Consulta: obtener películas que dirigió
         const moviesResult = await db.query(`
             SELECT m.movie_id, m.title, m.release_date
-            from movie_crew as mc
-            left join movie as m on m.movie_id = mc.movie_id
-            where job ilike '%director%' and mc.person_id = $1
+            FROM movie_crew as mc
+            LEFT JOIN movie as m ON m.movie_id = mc.movie_id
+            WHERE job ILIKE '%director%' AND mc.person_id = $1
+            ORDER BY m.release_date DESC
         `, [directorId]);
 
-        const directorName = directorResult.rows[0]?.person_name || 'Director desconocido';
+        if (directorResult.rows.length === 0) {
+            return res.status(404).send('Director no encontrado.');
+        }
+
+        const directorName = directorResult.rows[0].person_name;
         const movies = moviesResult.rows;
 
         res.render('director', { directorName, movies });
@@ -251,7 +344,6 @@ app.get('/director/:id', async (req, res) => {
         res.status(500).send('Error al obtener información del director');
     }
 });
-
 
 app.listen(port, () => {
     console.log(`Servidor en ejecución en http://localhost:${port}`);

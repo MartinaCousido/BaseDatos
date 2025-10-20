@@ -1,24 +1,191 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Películas con <%= actorName %></title>
-    <link rel="stylesheet" href="/css/styles.css" />
-  </head>
-  <body>
-    <%- include('common/navbar.ejs', { toSearch: actorName }) -%>
-    <h1>Películas con <%= actorName %></h1>
-    <ul>
-      <% movies.sort((a, b) => new Date(b.release_date) - new
-      Date(a.release_date)).forEach((movie) => { %>
-      <li>
-        <a href="/pelicula/<%= movie.movie_id %>"
-          ><%= movie.title %> (<%= new Date(movie.release_date).getFullYear()
-          %>)</a
-        >
-      </li>
-      <% }); %>
-    </ul>
-    <p></p>
-    <div id="inicio"><a href="/">Inicio</a></div>
-  </body>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= actorName %> - Actor</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .actor-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #1a1a1a;
+            min-height: 100vh;
+        }
+
+        .actor-hero {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.2);
+        }
+
+        .actor-hero h1 {
+            font-size: 3.5rem;
+            color: #ffd700;
+            margin: 0;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .movies-section {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .movies-section h2 {
+            color: #ffd700;
+            font-size: 2rem;
+            margin: 0 0 25px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .movie-item {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .movie-item:hover {
+            border-color: #ffd700;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .movie-item a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .movie-item a:hover {
+            color: #ffd700;
+        }
+
+        .movie-year {
+            color: #999;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .character-name {
+            color: #fff;
+            font-size: 1rem;
+            font-style: italic;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+        }
+
+        .gender-info {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .gender-info p {
+            color: #ddd;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .gender-info strong {
+            color: #ffd700;
+        }
+
+        .back-link {
+            display: inline-block;
+            background: #ffd700;
+            color: #1a1a1a;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .back-link:hover {
+            background: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .total-movies {
+            color: #999;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .actor-hero h1 {
+                font-size: 2rem;
+            }
+
+            .movies-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="actor-container">
+        <div class="actor-hero">
+            <h1> <%= actorName %></h1>
+        </div>
+
+        <div class="gender-info">
+            <p><strong>Género:</strong> <%= actorGender %></p>
+        </div>
+
+        <div class="movies-section">
+            <h2> Filmografía</h2>
+            <p class="total-movies">Total de películas: <strong style="color: #ffd700;"><%= movies.length %></strong></p>
+            
+            <% if (movies.length > 0) { %>
+                <div class="movies-grid">
+                    <% movies.forEach((movie) => { %>
+                        <div class="movie-item">
+                            <a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %></a>
+                            <% if (movie.release_date) { %>
+                                <div class="movie-year"> <%= new Date(movie.release_date).getFullYear() %></div>
+                            <% } %>
+                            <% if (movie.character_name) { %>
+                                <div class="character-name">Personaje: <%= movie.character_name %></div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <p style="color: #999;">No hay películas registradas para este actor.</p>
+            <% } %>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="/" class="back-link"> Volver al inicio</a>
+        </div>
+    </div>
+</body>
 </html>
