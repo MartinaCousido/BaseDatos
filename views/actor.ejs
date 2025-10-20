@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Películas con <%= actorName %></title>
-    <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
-<h1>Películas con <%= actorName %></h1>
-<ul>
-    <% movies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
-        <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)</a></li>
-    <% }); %>
-</ul>
-<p></p>
-<div id="inicio"><a href="/">Inicio</a></div>
-</body>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <%- include('common/navbar.ejs', { toSearch: actorName }) -%>
+    <h1>Películas con <%= actorName %></h1>
+    <ul>
+      <% movies.sort((a, b) => new Date(b.release_date) - new
+      Date(a.release_date)).forEach((movie) => { %>
+      <li>
+        <a href="/pelicula/<%= movie.movie_id %>"
+          ><%= movie.title %> (<%= new Date(movie.release_date).getFullYear()
+          %>)</a
+        >
+      </li>
+      <% }); %>
+    </ul>
+    <p></p>
+    <div id="inicio"><a href="/">Inicio</a></div>
+  </body>
 </html>

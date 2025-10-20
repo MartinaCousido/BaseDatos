@@ -1,85 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= movie.title %></title>
-  <link rel="stylesheet" href="/css/styles.css" />
-</head>
-<body>
-  <div class="movie-container">
-    <div class="movie-header">
-      <h1 class="movie-title"><%= movie.title %></h1>
-      <% if (movie.release_date) { 
-        const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-        const date = new Date(movie.release_date);
-        const formattedDate = `${date.getDate()}-${monthNames[date.getMonth()]}-${date.getFullYear()}`;
-      %>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= movie.title %></title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <%- include('common/navbar.ejs', { toSearch: movie.title }) -%>
+    <div class="movie-container">
+      <div class="movie-header">
+        <h1 class="movie-title"><%= movie.title %></h1>
+        <% if (movie.release_date) { const monthNames = ["Ene", "Feb", "Mar",
+        "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]; const
+        date = new Date(movie.release_date); const formattedDate =
+        `${date.getDate()}-${monthNames[date.getMonth()]}-${date.getFullYear()}`;
+        %>
         <p class="movie-date"><%= formattedDate %></p>
-      <% } %>
-    </div>
+        <% } %>
+      </div>
 
-    <div class="movie-info">
-      <% if (movie.directors && movie.directors.length) { %>
+      <div class="movie-info">
+        <% if (movie.directors && movie.directors.length) { %>
         <div class="section">
           <h2>🎬 Dirección</h2>
           <ul>
             <% movie.directors.forEach(director => { %>
-              <li><a href="/director/<%= director.crew_member_id %>"><%= director.crew_member_name %></a></li>
+            <li>
+              <a href="/director/<%= director.crew_member_id %>"
+                ><%= director.crew_member_name %></a
+              >
+            </li>
             <% }) %>
           </ul>
         </div>
-      <% } %>
-
-      <% if (movie.writers && movie.writers.length) { %>
+        <% } %> <% if (movie.writers && movie.writers.length) { %>
         <div class="section">
           <h2>✍️ Guion</h2>
           <ul>
             <% movie.writers.forEach(writer => { %>
-              <li><%= writer.crew_member_name %></li>
+            <li><%= writer.crew_member_name %></li>
             <% }) %>
           </ul>
         </div>
-      <% } %>
-
-      <% if (movie.overview) { %>
+        <% } %> <% if (movie.overview) { %>
         <div class="section">
           <h2>📖 Sinopsis</h2>
           <p class="overview"><%= movie.overview %></p>
         </div>
-      <% } %>
-
-      <% if (movie.cast && movie.cast.length) { %>
+        <% } %> <% if (movie.cast && movie.cast.length) { %>
         <div class="section">
           <h2>🎭 Elenco</h2>
           <div class="cast-grid">
-            <% movie.cast.sort((a,b) => a.cast_order - b.cast_order).forEach(actor => { %>
-              <div class="actor-card">
-                <strong><a href="/actor/<%= actor.actor_id %>"><%= actor.actor_name %></a></strong>
-                <% if (actor.character_name) { %>
-                  <p class="character">como <%= actor.character_name %></p>
-                <% } %>
-              </div>
+            <% movie.cast.sort((a,b) => a.cast_order -
+            b.cast_order).forEach(actor => { %>
+            <div class="actor-card">
+              <strong
+                ><a href="/actor/<%= actor.actor_id %>"
+                  ><%= actor.actor_name %></a
+                ></strong
+              >
+              <% if (actor.character_name) { %>
+              <p class="character">como <%= actor.character_name %></p>
+              <% } %>
+            </div>
             <% }) %>
           </div>
         </div>
-      <% } %>
-
-      <% if (movie.crew && movie.crew.length) { %>
+        <% } %> <% if (movie.crew && movie.crew.length) { %>
         <div class="section">
           <h2>⚙️ Equipo técnico</h2>
           <ul>
             <% movie.crew.forEach(member => { %>
-              <li><%= member.crew_member_name %> — <%= member.department_name %> (<%= member.job %>)</li>
+            <li>
+              <%= member.crew_member_name %> — <%= member.department_name %>
+              (<%= member.job %>)
+            </li>
             <% }) %>
           </ul>
         </div>
-      <% } %>
-    </div>
+        <% } %>
+      </div>
 
-    <div id="inicio" class="section">
-      <a href="/" class="home-link">🏠 Volver al inicio</a>
+      <div id="inicio" class="section">
+        <a href="/" class="home-link">🏠 Volver al inicio</a>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

@@ -25,21 +25,7 @@
     </script>
   </head>
   <body>
-    <nav class="navbar">
-      <div class="nav-container">
-        <a href="#" class="nav-brand">The Movies</a>
-        <div class="nav-filters">
-          <a href="#">Acción</a>
-          <a href="#">Comedia</a>
-          <a href="#">Drama</a>
-          <a href="#">Terror</a>
-        </div>
-        <form class="nav-search" action="/buscar" method="GET">
-          <input type="text" name="q" placeholder="Buscar películas..." />
-          <button type="submit">Buscar</button>
-        </form>
-      </div>
-    </nav>
+    <%- include('common/navbar.ejs', { toSearch: null }) -%>
 
     <header class="hero">
       <div class="hero-content">
