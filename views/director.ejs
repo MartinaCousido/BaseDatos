@@ -9,8 +9,7 @@
         .director-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 40px 20px;
-            background: #1a1a1a;
+            padding: 5% 10%;
             min-height: 100vh;
         }
 
@@ -123,6 +122,7 @@
     </style>
 </head>
 <body>
+  <%- include('common/navbar.ejs', { toSearch: directorName }) -%>
     <div class="director-container">
         <div class="director-hero">
             <h1> <%= directorName %></h1>

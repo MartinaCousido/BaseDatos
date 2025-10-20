@@ -9,8 +9,7 @@
         .actor-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 40px 20px;
-            background: #1a1a1a;
+            padding: 5% 10%;
             min-height: 100vh;
         }
 
@@ -151,6 +150,7 @@
     </style>
 </head>
 <body>
+    <%- include('common/navbar.ejs', { toSearch: actorName }) -%>
     <div class="actor-container">
         <div class="actor-hero">
             <h1> <%= actorName %></h1>
