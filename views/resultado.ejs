@@ -3,29 +3,10 @@
   <head>
     <title>Resultado de la Búsqueda</title>
     <link rel="stylesheet" href="/css/styles.css" />
-    <link rel="stylesheet" href="/css/index.css" />
   </head>
   <body class="page-content">
-    <nav class="navbar visible">
-      <div class="nav-container">
-        <a href="/" class="nav-brand">The Movies</a>
-        <div class="nav-filters">
-          <a href="#">Acción</a>
-          <a href="#">Comedia</a>
-          <a href="#">Drama</a>
-          <a href="#">Terror</a>
-        </div>
-        <form class="nav-search" action="/buscar" method="GET">
-          <input
-            type="text"
-            name="q"
-            value="<%= toSearch %>"
-            placeholder="Buscar películas..."
-          />
-          <button type="submit">Buscar</button>
-        </form>
-      </div>
-    </nav>
+    <%- include('common/navbar.ejs', toSearch) -%>
+
 
     <div class="tabs-container">
       <div class="tab-nav">

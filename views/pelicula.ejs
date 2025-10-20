@@ -224,6 +224,7 @@
   </style>
 </head>
 <body>
+    <%- include('common/navbar.ejs', { toSearch: movie.title }) -%>
   <div class="movie-detail-container">
     <div class="movie-hero">
       <h1><%= movie.title %></h1>
@@ -240,9 +241,14 @@
       <% if (movie.directors && movie.directors.length) { %>
         <div class="info-card">
           <h2> Dirección</h2>
+
           <ul>
             <% movie.directors.forEach(director => { %>
-              <li><a href="/director/<%= director.crew_member_id %>"><%= director.crew_member_name %></a></li>
+            <li>
+              <a href="/director/<%= director.crew_member_id %>"
+                ><%= director.crew_member_name %></a
+              >
+            </li>
             <% }) %>
           </ul>
         </div>
@@ -253,7 +259,7 @@
           <h2> Guion</h2>
           <ul>
             <% movie.writers.forEach(writer => { %>
-              <li><%= writer.crew_member_name %></li>
+            <li><%= writer.crew_member_name %></li>
             <% }) %>
           </ul>
         </div>
@@ -331,12 +337,12 @@
             <% }) %>
           </ul>
         </div>
-      <% } %>
-    </div>
+        <% } %>
+      </div>
 
-    <div style="text-align: center;">
-      <a href="/" class="back-link"> Volver al inicio</a>
+      <div id="inicio" class="section">
+        <a href="/" class="home-link">🏠 Volver al inicio</a>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
