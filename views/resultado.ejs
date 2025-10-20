@@ -37,6 +37,7 @@
           const allMovies = <%- JSON.stringify(movies) %>;
           const allActors = <%- JSON.stringify(actors) %>;
           const allDirectors = <%- JSON.stringify(directors) %>;
+          const genre = <%- JSON.stringify(genre) %>;
           const resultsPerPage = 20;
 
           // --- 2. DEFINIR EL ESTADO INICIAL DE LA APLICACIÓN ---
@@ -44,7 +45,8 @@
               activeTab: 'peliculas', // Se actualizará en el renderizado inicial
               peliculas: { data: allMovies, currentPage: 1, grid: document.getElementById('movies-grid'), pag: document.getElementById('movies-pagination') },
               actores: { data: allActors, currentPage: 1, grid: document.getElementById('actors-grid'), pag: document.getElementById('actors-pagination') },
-              directores: { data: allDirectors, currentPage: 1, grid: document.getElementById('directors-grid'), pag: document.getElementById('directors-pagination') }
+              directores: { data: allDirectors, currentPage: 1, grid: document.getElementById('directors-grid'), pag: document.getElementById('directors-pagination') },
+              genre: genre
           };
 
           // --- 3. FUNCIÓN PRINCIPAL PARA RENDERIZAR LA VISTA ---
@@ -70,6 +72,7 @@
               for (const item of paginatedItems) {
                   let cardHTML = '';
                   if (state.activeTab === 'peliculas') {
+                      const genreSpan = state.genre ? `<span>${state.genre}</span>` : '';
                       const relacionadoSpan = item.priority === 3 ? '<span>Relacionado</span>' : '';
                       cardHTML = `
                           <a href="/pelicula/${item.movie_id}" class="result-card">
@@ -77,6 +80,7 @@
                               <div class="card-info">
                                   <h3 class="card-title">${item.title}</h3>
                                   ${relacionadoSpan}
+                                  ${genreSpan}
                               </div>
                           </a>`;
                   } else {

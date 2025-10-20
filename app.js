@@ -40,22 +40,6 @@ async function getMoviesByGenre(genre) {
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
-// --- FUNCIONES QUE TRAEN TODOS LOS RESULTADOS (SIN PAGINACIÓN) ---
-app.get('/buscar/:genre', async (req, res) => {
-    const genreToSearch = req.params.genre;
-    console.log(genreToSearch)
-    try{
-        const response = await getMoviesByGenre(genreToSearch);
-        console.log(response)
-        res.render('resultado', {
-            movies: response,
-            actors: []
-        })
-    }catch ( error ) {
-        console.log(error);
-        res.status(500).send('Error en la busqueda.')
-    }
-})
 
 async function getMoviesForSearch(toSearch) {
     // Usamos UNION ALL con prioridad, pero sin LIMIT/OFFSET para traer todo
@@ -115,6 +99,7 @@ app.get('/buscar', async (req, res) => {
         // Las enviamos a la plantilla
         res.render('resultado', { 
             toSearch: searchTerm,
+            genre: null,
             movies: moviesData,
             actors: actorsData,
             directors: directorsData,
@@ -126,6 +111,23 @@ app.get('/buscar', async (req, res) => {
     }
 });
 
+// --- FUNCIONES QUE TRAEN TODOS LOS RESULTADOS (SIN PAGINACIÓN) ---
+app.get('/buscar/:genre', async (req, res) => {
+    const genreToSearch = req.params.genre;
+    try{
+        const response = await getMoviesByGenre(genreToSearch);
+        res.render('resultado', {
+            toSearch: null,
+            genre: genreToSearch,
+            movies: response,
+            actors: [],
+            directors: []
+        })
+    }catch ( error ) {
+        console.log(error);
+        res.status(500).send('Error en la busqueda.')
+    }
+})
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
     res.render('index');
