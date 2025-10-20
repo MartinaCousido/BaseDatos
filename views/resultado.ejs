@@ -2,42 +2,156 @@
 <html>
   <head>
     <title>Resultado de la Búsqueda</title>
-    <link rel="stylesheet" href="\css\styles.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body class="page-content">
-    <h1>Resultados de la Búsqueda</h1>
+    <%- include('common/navbar.ejs', toSearch) -%>
 
-    <h2 class="results-header">Películas <%= movies.length ? movies.length : '' %></h2>
-    <% if (movies.length === 0) { %>
-    <p class="no-results">No se encontraron películas con ese título.</p>
-    <% } else { %>
-    <div class="results-grid">
-      <% movies.forEach((movie) => { %>
-      <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
-        <img class="card-img" src="/imgs/poster.jpg" alt="" />
-        <div class="card-info">
-          <h3 class="card-title"><%= movie.title %></h3>
-          <span class="card-tagline"><%= movie.tagline %></span>
-        </div>
-      </a>
-      <% }); %>
-    </div>
-    <% } %>
 
-    <h2 class="results-header">Actores</h2>
-    <% if (actors.length === 0) { %>
-    <p class="no-results">No se encontraron actores.</p>
-    <% } else { %>
-    <div class="results-grid">
-      <% actors.forEach((actor) => { %>
-      <a href="/actor/<%= actor.person_id %>" class="result-card">
-        <img class="card-img" src="./imgs/Tom_Hanks.jpg" alt="" />
-        <div class="card-info">
-          <h3 class="card-title"><%= actor.person_name %></h3>
+    <div class="tabs-container">
+      <div class="tab-nav">
+        <button class="tab-button" data-tab="peliculas">Películas</button>
+        <button class="tab-button" data-tab="actores">Actores</button>
+        <button class="tab-button" data-tab="directores">Directores</button>
+      </div>
+
+      <div class="tab-content">
+        <div id="peliculas-panel" class="tab-panel">
+          <div class="results-grid" id="movies-grid"></div>
+          <div class="pagination" id="movies-pagination"></div>
         </div>
-      </a>
-      <% }); %>
+        <div id="actores-panel" class="tab-panel">
+          <div class="results-grid" id="actors-grid"></div>
+          <div class="pagination" id="actors-pagination"></div>
+        </div>
+        <div id="directores-panel" class="tab-panel">
+          <div class="results-grid" id="directors-grid"></div>
+          <div class="pagination" id="directors-pagination"></div>
+        </div>
+      </div>
     </div>
-    <% } %>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          // --- 1. OBTENER TODOS LOS DATOS DEL SERVIDOR ---
+          const allMovies = <%- JSON.stringify(movies) %>;
+          const allActors = <%- JSON.stringify(actors) %>;
+          const allDirectors = <%- JSON.stringify(directors) %>;
+          const resultsPerPage = 20;
+
+          // --- 2. DEFINIR EL ESTADO INICIAL DE LA APLICACIÓN ---
+          const state = {
+              activeTab: 'peliculas', // Se actualizará en el renderizado inicial
+              peliculas: { data: allMovies, currentPage: 1, grid: document.getElementById('movies-grid'), pag: document.getElementById('movies-pagination') },
+              actores: { data: allActors, currentPage: 1, grid: document.getElementById('actors-grid'), pag: document.getElementById('actors-pagination') },
+              directores: { data: allDirectors, currentPage: 1, grid: document.getElementById('directors-grid'), pag: document.getElementById('directors-pagination') }
+          };
+
+          // --- 3. FUNCIÓN PRINCIPAL PARA RENDERIZAR LA VISTA ---
+          function render() {
+              const tab = state[state.activeTab];
+              const totalPages = Math.ceil(tab.data.length / resultsPerPage);
+
+              // Limpiar contenedores
+              tab.grid.innerHTML = '';
+              tab.pag.innerHTML = '';
+
+              // Mostrar mensaje si no hay resultados
+              if (tab.data.length === 0) {
+                  tab.grid.innerHTML = `<p class="no-results">No se encontraron ${state.activeTab}.</p>`;
+                  return;
+              }
+
+              // Renderizar la grilla de resultados para la página actual
+              const start = (tab.currentPage - 1) * resultsPerPage;
+              const end = start + resultsPerPage;
+              const paginatedItems = tab.data.slice(start, end);
+
+              for (const item of paginatedItems) {
+                  let cardHTML = '';
+                  if (state.activeTab === 'peliculas') {
+                      const relacionadoSpan = item.priority === 3 ? '<span>Relacionado</span>' : '';
+                      cardHTML = `
+                          <a href="/pelicula/${item.movie_id}" class="result-card">
+                              <img class="card-img" src="/imgs/poster.jpg"/>
+                              <div class="card-info">
+                                  <h3 class="card-title">${item.title}</h3>
+                                  ${relacionadoSpan}
+                              </div>
+                          </a>`;
+                  } else {
+                      const personType = state.activeTab === 'actores' ? 'actor' : 'director';
+                      cardHTML = `
+                          <a href="/${personType}/${item.person_id}" class="result-card">
+                              <img class="card-img" src="/imgs/Tom_Hanks.jpg"/>
+                              <div class="card-info">
+                                  <h3 class="card-title">${item.person_name}</h3>
+                              </div>
+                          </a>`;
+                  }
+                  tab.grid.innerHTML += cardHTML;
+              }
+
+              // Renderizar los controles de paginación
+              if (totalPages > 1) {
+                  tab.pag.innerHTML += `<button class="page-link ${tab.currentPage === 1 ? 'disabled' : ''}" data-page="${tab.currentPage - 1}"><<</button>`;
+
+                  if (totalPages > 10) {
+                      tab.pag.innerHTML += `<span class="page-info">Página ${tab.currentPage} de ${totalPages}</span>`;
+                  } else {
+                      for (let i = 1; i <= totalPages; i++) {
+                          tab.pag.innerHTML += `<button class="page-link ${i === tab.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                      }
+                  }
+
+                  tab.pag.innerHTML += `<button class="page-link ${tab.currentPage >= totalPages ? 'disabled' : ''}" data-page="${tab.currentPage + 1}">>></button>`;
+              }
+          }
+
+          // --- 4. MANEJO DE EVENTOS ---
+          const tabButtons = document.querySelectorAll(".tab-button");
+          const tabPanels = document.querySelectorAll(".tab-panel");
+
+          tabButtons.forEach(button => {
+              button.addEventListener('click', () => {
+                  state.activeTab = button.dataset.tab;
+                  state[state.activeTab].currentPage = 1;
+
+                  tabButtons.forEach(btn => btn.classList.remove('active'));
+                  tabPanels.forEach(panel => panel.classList.remove('active'));
+                  button.classList.add('active');
+                  document.getElementById(`${state.activeTab}-panel`).classList.add('active');
+                  render();
+              });
+          });
+
+          document.querySelector('.tab-content').addEventListener('click', (e) => {
+              if (e.target.matches('.page-link') && !e.target.matches('.disabled')) {
+                  const page = parseInt(e.target.dataset.page, 10);
+                  state[state.activeTab].currentPage = page;
+                  render();
+              }
+          });
+
+          // --- 5. RENDERIZADO INICIAL ---
+          // Actualizar los contadores en las pestañas
+          document.querySelector('.tab-button[data-tab="peliculas"]').innerHTML += ` (${allMovies.length})`;
+          document.querySelector('.tab-button[data-tab="actores"]').innerHTML += ` (${allActors.length})`;
+          document.querySelector('.tab-button[data-tab="directores"]').innerHTML += ` (${allDirectors.length})`;
+
+          // ✅ NUEVA LÓGICA PARA DECIDIR LA PESTAÑA INICIAL
+          let initialTab = 'peliculas'; // Por defecto, empezamos con películas
+
+          if (allMovies.length === 0) {
+              initialTab = 'actores'; // Si no hay películas, probamos con actores
+          }
+          if (allMovies.length === 0 && allActors.length === 0) {
+              initialTab = 'directores'; // Si tampoco hay actores, probamos con directores
+          }
+
+          // Activar la pestaña determinada y renderizar
+          document.querySelector(`.tab-button[data-tab="${initialTab}"]`).click();
+      });
+    </script>
   </body>
 </html>

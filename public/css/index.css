@@ -16,6 +16,27 @@ body {
     background-color: #3a3a3a;
 }
 
+.hero-content form {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: center;
+    justify-items: stretch;
+    height: 100%;
+}
+
+.hero-content form input {
+    font-size: 1.1rem;
+    border-radius: 8px 0 0 8px;
+    border-color: transparent;
+    background-color: #ffffff;
+    color: #2a2a2a;
+    width: 60%;
+    outline: none;
+    transition: all 0.3s ease;
+    padding: 1vh;
+}
+
 .hero-content h1 {
     font-size: 7rem;
     font-weight: bold;
@@ -25,24 +46,29 @@ body {
 }
 
 /* Estilo común para los buscadores */
-.hero-content form input,
 .nav-search input {
-    padding: 14px 22px;
     font-size: 1.1rem;
-    border: 2px solid #555;
     border-radius: 8px 0 0 8px;
+    border-color: transparent;
     background-color: #ffffff;
     color: #2a2a2a;
-    width: 400px;
+    height: 100%;
+    width: 60%;
     outline: none;
     transition: all 0.3s ease;
+}
+
+.nav-search {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 .hero-content form input:focus,
 .nav-search input:focus {
     background-color: #fff;
-    border-color: #FFC107;
-    box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
 }
 
 .hero-content form input::placeholder {
@@ -51,14 +77,13 @@ body {
 
 .hero-content form button,
 .nav-search button {
-    padding: 14px 28px;
+    padding: 1vh;
     font-size: 1.1rem;
-    border: none;
+    border-color: transparent;
     background-color: #FFC107;
     color: #2a2a2a;
     cursor: pointer;
     border-radius: 0 8px 8px 0;
-    margin-left: -5px;
     transition: all 0.3s ease;
     font-weight: 600;
 }
@@ -66,8 +91,6 @@ body {
 .hero-content form button:hover,
 .nav-search button:hover {
     background-color: #FFD54F;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
 }
 
 /* --- ESTILOS DE LA BARRA DE NAVEGACIÓN (NAVBAR) --- */
