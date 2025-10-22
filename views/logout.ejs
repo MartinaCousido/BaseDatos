@@ -183,47 +183,10 @@
 
   <script>
     window.addEventListener("DOMContentLoaded", (event) => {
-      // Aquí puedes agregar cualquier script necesario para la página de login
-      const loginForm = document.querySelector("form");
-      const inputs = loginForm.querySelectorAll("input");
-      const invalid = document.querySelector("#invalid");
-      inputs.forEach(input => {
-        input.addEventListener("click", () => {
-          invalid.style.display = "none"
-          inputs.forEach(input => input.style.borderColor = "#ccc"); // reset border color
-        });
-      })
-      loginForm.addEventListener("submit", (event) => {
-        // hago el post 
-        event.preventDefault(); // Evita el envío tradicional del formulario
-        const formData = new FormData(loginForm);
-        const username = formData.get("username");
-        const password = formData.get("password");
-        console.log("Intentando iniciar sesión con:", { username, password});
-
-        (async () => {
-          try {
-            const response = await fetch('/login', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ username, password })
-            });
-
-            const data = await response.json().catch(() => ({}));
-            console.log('Datos recibidos del servidor:', data, String(data));
-            if (response.ok) {
-              window.localStorage.setItem('user',JSON.stringify(data));
-              window.location = '/';
-            } else {
-              inputs.forEach(i => i.style.borderColor = 'red');
-              invalid.style.display = 'block';
-            }
-          } catch (error) {
-            console.error('Error al realizar la solicitud:', error);
-          }
-        })();
-      });
-
+        localStorage.removeItem('user');
+        setInterval(() => {
+            window.location = '/';
+        }, 3000);
     });
   </script>
 </head>
@@ -233,32 +196,8 @@
     <div class="login-container">
       
       <div class="header-container">
-          <h1>Login</h1>
+          <h1>Has cerrado sesión exitosamente</h1>
       </div>
-
-      <form action="/login" method="POST">
-        <div class="form-group">
-          <label for="username">Usuario/Email</label>
-          <input type="text" placeholder="Ingresa tu usuario" id="username" name="username" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input type="password" id="password" placeholder="Ingresa tu contraseña" name="password" required>
-        </div>
-        
-        <div class="links">
-          <span></span> <a href="#">¿Olvidaste tu contraseña?</a>
-        </div>
-        
-        <span id="invalid" class="invalid">El usuario o contraseña son invalidos.</span>
-        <button type="submit">Iniciar Sesión</button>
-      
-      </form>
-
-      <p class="signup-link">
-        ¿No tienes una cuenta? <a href="/register">Regístrate</a>
-      </p>
 
     </div>
   </div>

@@ -146,7 +146,8 @@
     .signup-link a:hover {
         text-decoration: underline;
     }
-    .invalid {
+
+    .message {
       display: none;
       color: red;
       text-align: center;
@@ -183,40 +184,75 @@
 
   <script>
     window.addEventListener("DOMContentLoaded", (event) => {
-      // Aquí puedes agregar cualquier script necesario para la página de login
-      const loginForm = document.querySelector("form");
-      const inputs = loginForm.querySelectorAll("input");
-      const invalid = document.querySelector("#invalid");
+      // Aquí puedes agregar cualquier script necesario para la página de registro
+      const registerForm = document.querySelector("form");
+      const inputs = registerForm.querySelectorAll("input");
+      const message = document.querySelector("#message");
+
       inputs.forEach(input => {
         input.addEventListener("click", () => {
-          invalid.style.display = "none"
+          message.textContent = "";
+          message.style.display = "none";
           inputs.forEach(input => input.style.borderColor = "#ccc"); // reset border color
         });
       })
-      loginForm.addEventListener("submit", (event) => {
+
+      registerForm.addEventListener("submit", (event) => {
         // hago el post 
         event.preventDefault(); // Evita el envío tradicional del formulario
-        const formData = new FormData(loginForm);
+        const formData = new FormData(registerForm);
         const username = formData.get("username");
         const password = formData.get("password");
-        console.log("Intentando iniciar sesión con:", { username, password});
+        const name = formData.get("name");
+        const email = formData.get("email");
+        console.log(formData)
+        if (!username || !password || !name || !email) {
+          inputs.forEach(i => i.style.borderColor = 'red');
+          message.textContent = 'Por favor, completa todos los campos.';
+          message.style.display = 'block';
+          return;
+        }
+
+        if (!/\S+@\S+\.\S+/.test(email)) {
+          inputs.forEach(i => i.style.borderColor = 'red');
+          message.textContent = 'Por favor, ingresa un email válido.';
+          message.style.display = 'block';
+          return;
+        }
+
+        if (password.length < 6) {
+          inputs.forEach(i => i.style.borderColor = 'red');
+          message.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+          message.style.display = 'block';
+          return;
+        }
+
+        if (message.style.display === 'block') {
+          return; // evita enviar si hay errores visibles
+        }
 
         (async () => {
           try {
-            const response = await fetch('/login', {
+            const response = await fetch('/register', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ username, password })
+              body: JSON.stringify({ username, password, name, email })
             });
 
             const data = await response.json().catch(() => ({}));
-            console.log('Datos recibidos del servidor:', data, String(data));
             if (response.ok) {
-              window.localStorage.setItem('user',JSON.stringify(data));
-              window.location = '/';
+              console.log('Registro exitoso', data);
+              message.textContent = 'Registro exitoso. Redirigiendo al login...';
+              message.style.color = 'green';
+              message.style.display = 'block';
+              setInterval(() => {
+                window.location = '/login';
+              }, 3000);
             } else {
+              console.error('Error en las credenciales', data);
               inputs.forEach(i => i.style.borderColor = 'red');
-              invalid.style.display = 'block';
+              message.textContent = 'El usuario ya tiene una cuenta registrada.';
+              message.style.display = 'block';
             }
           } catch (error) {
             console.error('Error al realizar la solicitud:', error);
@@ -233,33 +269,34 @@
     <div class="login-container">
       
       <div class="header-container">
-          <h1>Login</h1>
+          <h1>Register</h1>
       </div>
 
-      <form action="/login" method="POST">
+      <form action="/register" method="POST">
         <div class="form-group">
-          <label for="username">Usuario/Email</label>
-          <input type="text" placeholder="Ingresa tu usuario" id="username" name="username" required>
+          <label for="name">Nombre Completo</label>
+          <input type="text" placeholder="Ingresa tu nombre completo" id="name" name="name" required>
         </div>
         
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="text" placeholder="example@mail.com" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" placeholder="Ingresa tu usuario" id="username" name="username" required>
+        </div>
+
         <div class="form-group">
           <label for="password">Contraseña</label>
           <input type="password" id="password" placeholder="Ingresa tu contraseña" name="password" required>
         </div>
         
-        <div class="links">
-          <span></span> <a href="#">¿Olvidaste tu contraseña?</a>
-        </div>
-        
-        <span id="invalid" class="invalid">El usuario o contraseña son invalidos.</span>
-        <button type="submit">Iniciar Sesión</button>
+        <span id="message" class="message"></span>
+        <button type="submit">Registrar</button>
       
       </form>
-
-      <p class="signup-link">
-        ¿No tienes una cuenta? <a href="/register">Regístrate</a>
-      </p>
-
     </div>
   </div>
 

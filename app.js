@@ -17,6 +17,7 @@ const movieRoutes = require('./routes/movies');
 const actorRoutes = require('./routes/actor');
 const directorRoutes = require('./routes/director');
 const loginRoutes = require('./routes/login');
+const registerRoutes = require('./routes/register')
 
 app.use([
     indexRoutes,
@@ -25,6 +26,7 @@ app.use([
     actorRoutes,
     directorRoutes,
     loginRoutes,
+    registerRoutes
 ]);
 
 app.listen(port, () => {

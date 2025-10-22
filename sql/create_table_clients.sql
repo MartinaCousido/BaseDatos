@@ -8,6 +8,5 @@ CREATE TABLE users.user (
 	username varchar(50) default null,
 	hpassword varchar(256) default null,
 	email varchar(100) default null,
-	phone varchar(20) default null,
 	CONSTRAINT pk_user PRIMARY KEY (user_id)
 );

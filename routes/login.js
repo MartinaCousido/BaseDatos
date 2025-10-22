@@ -22,18 +22,17 @@ router.get("/login", (req, res) => {
   res.render("login");
 });
 
-
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   const hashedPassword = await sha256(password);
   try {
     const response = await db.query(
-      "SELECT * FROM \"user\" WHERE (\"name\" = $1 OR email = $1 OR username = $1) AND hpassword = $2",
+      "SELECT * FROM \"user\" WHERE (email = $1 OR username = $1) AND hpassword = $2",
       [username, hashedPassword]
     );
   if (response.rows.length > 0) {
     // Return JSON so clients using fetch/AJAX don't get a full-page navigation
-    return res.status(200).json({ ok: true, message: "Login exitoso" });
+    return res.status(200).send({ ok: true, message: "Login exitoso", data: response.rows[0] });
   } else {
     return res.status(401).json({ ok: false, message: "Credenciales inválidas" });
   }
@@ -41,6 +40,10 @@ router.post("/login", async (req, res) => {
     console.error("Error al realizar la consulta:", error);
     return res.status(500).send("Error interno del servidor");
   }
+});
+
+router.get("/logout", (req, res) => {
+    res.render("logout");
 });
 
 module.exports = router;
