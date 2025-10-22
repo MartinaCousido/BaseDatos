@@ -143,7 +143,10 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-// Ruta para la página de datos de una película particular (PostgreSQL)
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
 // Ruta para la página de datos de una película particular (PostgreSQL)
 app.get('/pelicula/:id', async (req, res) => {
     const movieId = req.params.id;
