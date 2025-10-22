@@ -6,11 +6,19 @@
     <title><%= movie.title %></title>
     <link rel="stylesheet" href="/css/styles.css" />
     <style>
+
+      html, body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
       .movie-detail-container {
+        flex: 1; /* ✅ ocupa todo el espacio disponible antes del footer */
         max-width: 1400px;
         margin: 0 auto;
         padding: 5% 10%;
-        min-height: 100vh;
       }
 
       .movie-hero {
@@ -338,6 +346,9 @@
           <a href="/" class="back-link"> Volver al inicio</a>
         </div>
     </div>
+
+        <%- include('common/footer.ejs') -%>
+
 
   </body>
 </html>
