@@ -150,154 +150,146 @@ app.get('/pelicula/:id', async (req, res) => {
 
     const query = `
     SELECT
-      movie.*,
-      actor.person_name as actor_name,
-      actor.person_id as actor_id,
-      crew_member.person_name as crew_member_name,
-      crew_member.person_id as crew_member_id,
-      movie_cast.character_name,
-      movie_cast.cast_order,
-      department.department_name,
-      movie_crew.job,
-      country.country_name,
-      genre.genre_name,
-      language.language_code,
-      language.language_name,
-      language_role.language_role,
-      production_company.company_name
-    FROM movie
-    LEFT JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
-    LEFT JOIN person as actor ON movie_cast.person_id = actor.person_id
-    LEFT JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
-    LEFT JOIN department ON movie_crew.department_id = department.department_id
-    LEFT JOIN person as crew_member ON crew_member.person_id = movie_crew.person_id
-    LEFT JOIN production_country ON movie.movie_id = production_country.movie_id
-    LEFT JOIN country ON production_country.country_id = country.country_id
-    LEFT JOIN movie_genres ON movie.movie_id = movie_genres.movie_id
-    LEFT JOIN genre ON movie_genres.genre_id = genre.genre_id
-    LEFT JOIN movie_languages ON movie.movie_id = movie_languages.movie_id
-    LEFT JOIN language ON movie_languages.language_id = language.language_id
-    LEFT JOIN language_role ON movie_languages.language_role_id = language_role.role_id
-    LEFT JOIN movie_company ON movie.movie_id = movie_company.movie_id
-    LEFT JOIN production_company ON movie_company.company_id = production_company.company_id
-    WHERE movie.movie_id = $1
+        m.movie_id AS id,
+        m.title,
+        m.tagline,
+        m.release_date,
+        m.overview,
+
+        /* CAST */
+        COALESCE((
+        SELECT json_agg(
+                json_build_object(
+                    'actor_id', mc.person_id,
+                    'actor_name', a.person_name,
+                    'character_name', mc.character_name,
+                    'cast_order', mc.cast_order
+                )
+                ORDER BY mc.cast_order
+                )
+        FROM movie_cast mc
+        JOIN person a ON a.person_id = mc.person_id
+        WHERE mc.movie_id = m.movie_id
+        ), '[]') AS cast,
+
+        /* DIRECTORES */
+        COALESCE((
+        SELECT json_agg(
+                json_build_object(
+                    'crew_member_id', cm.person_id,
+                    'crew_member_name', p.person_name,
+                    'department_name', 'Directing',
+                    'job', cm.job
+                )
+                ORDER BY p.person_name
+                )
+        FROM movie_crew cm
+        JOIN person p     ON p.person_id = cm.person_id
+        JOIN department d ON d.department_id = cm.department_id
+        WHERE cm.movie_id = m.movie_id
+            AND d.department_name = 'Directing'
+            AND cm.job = 'Director'
+        ), '[]')  AS directors,
+
+        /* ESCRITORES */
+        COALESCE((
+        SELECT json_agg(
+                json_build_object(
+                    'crew_member_id', cm.person_id,
+                    'crew_member_name', p.person_name,
+                    'department_name', 'Writing',
+                    'job', cm.job
+                )
+                ORDER BY p.person_name
+                )
+        FROM movie_crew cm
+        JOIN person p     ON p.person_id = cm.person_id
+        JOIN department d ON d.department_id = cm.department_id
+        WHERE cm.movie_id = m.movie_id
+            AND d.department_name = 'Writing'
+            AND cm.job IN ('Writer','Screenplay')
+        ), '[]') AS writers,
+
+        /* CREW (resto) */
+        COALESCE((
+        SELECT json_agg(
+                json_build_object(
+                    'crew_member_id', cm.person_id,
+                    'crew_member_name', p.person_name,
+                    'department_name', d.department_name,
+                    'job', cm.job
+                )
+                ORDER BY d.department_name, p.person_name
+                )
+        FROM movie_crew cm
+        JOIN person p     ON p.person_id = cm.person_id
+        JOIN department d ON d.department_id = cm.department_id
+        WHERE cm.movie_id = m.movie_id
+            AND d.department_name NOT IN ('Directing','Writing')
+        ), '[]') AS crew,
+
+        /* PAISES */
+        COALESCE((
+        SELECT json_agg(DISTINCT c.country_name)
+        FROM production_country pc
+        JOIN country c ON c.country_id = pc.country_id
+        WHERE pc.movie_id = m.movie_id
+        ), '[]') AS countries,
+
+        /* GENEROS */
+        COALESCE((
+        SELECT json_agg(DISTINCT g.genre_name)
+        FROM movie_genres mg
+        JOIN genre g ON g.genre_id = mg.genre_id
+        WHERE mg.movie_id = m.movie_id
+        ), '[]') AS genres,
+
+        /* IDIOMA ORIGINAL */
+        (
+        SELECT l.language_name
+        FROM movie_languages ml
+        JOIN language l     ON l.language_id = ml.language_id
+        LEFT JOIN language_role lr ON lr.role_id = ml.language_role_id
+        WHERE ml.movie_id = m.movie_id
+            AND lr.language_role ILIKE 'original%'
+        LIMIT 1
+        )  AS original_language,
+
+        /* COMPANIAS */
+        COALESCE((
+        SELECT json_agg(DISTINCT pc.company_name)
+        FROM movie_company mc2
+        JOIN production_company pc ON pc.company_id = mc2.company_id
+        WHERE mc2.movie_id = m.movie_id
+        ), '[]') AS production_companies
+
+    FROM movie m
+    WHERE m.movie_id = $1
   `;
 
-    try {
-        const result = await db.query(query, [movieId]);
-        const rows = result.rows;
+  try {
+    const { rows } = await db.query(query, [movieId]);
+    if (rows.length === 0) return res.status(404).send('Película no encontrada.');
 
-        if (rows.length === 0) {
-            return res.status(404).send('Película no encontrada.');
-        }
 
-        const movieData = {
-            tagline: rows[0].tagline,
-            id: rows[0].id,
-            title: rows[0].title,
-            release_date: rows[0].release_date,
-            overview: rows[0].overview,
-            directors: [],
-            writers: [],
-            cast: [],
-            crew: [],
-            countries: [],
-            genres: [],
-            originalLanguage: null,
-            productionCompanies: []
-        };
+    const r = rows[0];
+    const movie = {
+      id: r.id,
+      title: r.title,
+      tagline: r.tagline,
+      release_date: r.release_date,
+      overview: r.overview,
+      directors: r.directors,
+      writers: r.writers,
+      cast: r.cast,
+      crew: r.crew,
+      countries: r.countries,
+      genres: r.genres,
+      originalLanguage: r.original_language,
+      productionCompanies: r.production_companies
+    };
 
-        // Procesar directores
-        rows.forEach((row) => {
-            if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
-                const isDuplicate = movieData.directors.some((crew_member) => crew_member.crew_member_id === row.crew_member_id);
-                if (!isDuplicate && row.department_name === 'Directing' && row.job === 'Director') {
-                    movieData.directors.push({
-                        crew_member_id: row.crew_member_id,
-                        crew_member_name: row.crew_member_name,
-                        department_name: row.department_name,
-                        job: row.job,
-                    });
-                }
-            }
-        });
-
-        // Procesar escritores
-        rows.forEach((row) => {
-            if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
-                const isDuplicate = movieData.writers.some((crew_member) => crew_member.crew_member_id === row.crew_member_id);
-                if (!isDuplicate && row.department_name === 'Writing' && (row.job === 'Writer' || row.job === 'Screenplay')) {
-                    movieData.writers.push({
-                        crew_member_id: row.crew_member_id,
-                        crew_member_name: row.crew_member_name,
-                        department_name: row.department_name,
-                        job: row.job,
-                    });
-                }
-            }
-        });
-
-        // Procesar elenco
-        rows.forEach((row) => {
-            if (row.actor_id && row.actor_name && row.character_name) {
-                const isDuplicate = movieData.cast.some((actor) => actor.actor_id === row.actor_id);
-                if (!isDuplicate) {
-                    movieData.cast.push({
-                        actor_id: row.actor_id,
-                        actor_name: row.actor_name,
-                        character_name: row.character_name,
-                        cast_order: row.cast_order,
-                    });
-                }
-            }
-        });
-
-        // Procesar crew
-        rows.forEach((row) => {
-            if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
-                const isDuplicate = movieData.crew.some((crew_member) => crew_member.crew_member_id === row.crew_member_id);
-                if (!isDuplicate) {
-                    if (row.department_name !== 'Directing' && row.department_name !== 'Writing') {
-                        movieData.crew.push({
-                            crew_member_id: row.crew_member_id,
-                            crew_member_name: row.crew_member_name,
-                            department_name: row.department_name,
-                            job: row.job,
-                        });
-                    }
-                }
-            }
-        });
-
-        // Procesar países de producción
-        rows.forEach((row) => {
-            if (row.country_name && !movieData.countries.includes(row.country_name)) {
-                movieData.countries.push(row.country_name);
-            }
-        });
-
-        // Procesar géneros
-        rows.forEach((row) => {
-            if (row.genre_name && !movieData.genres.includes(row.genre_name)) {
-                movieData.genres.push(row.genre_name);
-            }
-        });
-
-        // Procesar idioma original (solo el que tenga el rol "Original")
-        rows.forEach((row) => {
-            if (row.language_name && row.language_role && row.language_role.toLowerCase().includes('original') && !movieData.originalLanguage) {
-                movieData.originalLanguage = row.language_name;
-            }
-        });
-
-        // Procesar compañías de producción
-        rows.forEach((row) => {
-            if (row.company_name && !movieData.productionCompanies.includes(row.company_name)) {
-                movieData.productionCompanies.push(row.company_name);
-            }
-        });
-
-        res.render('pelicula', { movie: movieData });
+    res.render('pelicula', { movie });
 
     } catch (err) {
         console.error(err);
