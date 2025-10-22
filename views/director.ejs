@@ -110,6 +110,20 @@
             margin-bottom: 20px;
         }
 
+        .info-card {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            border-color: #ffd700;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
         @media (max-width: 768px) {
             .director-hero h1 {
                 font-size: 2rem;
@@ -128,7 +142,7 @@
             <h1> <%= directorName %></h1>
         </div>
 
-        <div class="movies-section">
+        <div class="info-card movies-section">
             <h2> Filmografía </h2>
             <p class="total-movies">Total de películas dirigidas: <strong style="color: #ffd700;"><%= movies.length %></strong></p>
             
