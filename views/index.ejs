@@ -29,7 +29,7 @@
 
     <header class="hero">
       <div class="hero-content">
-        <h1>The Movies</h1>
+        <h1>ScreenHub</h1>
         <form action="/buscar" method="GET">
           <input
             type="text"
@@ -43,10 +43,17 @@
 
     <main class="content-placeholder">
       <h2>Películas Populares</h2>
-      <p>
-        El contenido de la página, como los resultados de búsqueda o las listas
-        de películas, aparecería aquí abajo.
-      </p>
+      <div class="results-popularity">
+      <% movies.forEach((movie, index) => { %>
+      <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
+        <img class="card-img" src="./imgs/poster.jpg" alt="" />
+        <div class="card-info">
+          <h3 class="card-title"><%= movie.title %></h3>
+          <span class="card-popularity">#<%= index + 1%></span>
+        </div>
+      </a>
+      <% }); %>
+    </div>
     </main>
 
     <script src="script.js"></script>

@@ -40,6 +40,16 @@ async function getMoviesByGenre(genre) {
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
+// Ruta para la página de inicio
+app.get('/', async (req, res) => {
+    try{
+        const response = await db.query(`select movie.*, popularity from movie order by popularity desc limit 8`);
+        res.render('index', {movies: response.rows});
+    } catch(error) {
+        console.log(error)
+        res.render('index', {movies:[]})
+    }
+});
 
 async function getMoviesForSearch(toSearch) {
     // Usamos UNION ALL con prioridad, pero sin LIMIT/OFFSET para traer todo
