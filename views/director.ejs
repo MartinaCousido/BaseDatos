@@ -135,12 +135,11 @@
             <% if (movies.length > 0) { %>
                 <div class="movies-grid">
                     <% movies.forEach((movie) => { %>
-                        <div class="movie-item">
-                            <a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %></a>
+                        <a href="/pelicula/<%= movie.movie_id %>" class="movie-item"><%= movie.title %>
                             <% if (movie.release_date) { %>
                                 <div class="movie-year"> <%= new Date(movie.release_date).getFullYear() %></div>
                             <% } %>
-                        </div>
+                        </a>
                     <% }); %>
                 </div>
             <% } else { %>
