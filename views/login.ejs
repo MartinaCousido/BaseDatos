@@ -146,6 +146,12 @@
     .signup-link a:hover {
         text-decoration: underline;
     }
+    .invalid {
+      display: none;
+      color: red;
+      text-align: center;
+      margin-bottom: -10px;
+    }
 
     /* --- Responsividad para móviles --- */
     @media (max-width: 768px) {
@@ -174,6 +180,52 @@
     }
 
   </style>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", (event) => {
+      // Aquí puedes agregar cualquier script necesario para la página de login
+      const loginForm = document.querySelector("form");
+      const inputs = loginForm.querySelectorAll("input");
+      const invalid = document.querySelector("#invalid");
+      inputs.forEach(input => {
+        input.addEventListener("click", () => {
+          invalid.style.display = "none"
+          inputs.forEach(input => input.style.borderColor = "#ccc"); // reset border color
+        });
+      })
+      loginForm.addEventListener("submit", (event) => {
+        // hago el post 
+        event.preventDefault(); // Evita el envío tradicional del formulario
+        const formData = new FormData(loginForm);
+        const username = formData.get("username");
+        const password = formData.get("password");
+        console.log("Intentando iniciar sesión con:", { username, password});
+
+        (async () => {
+          try {
+            const response = await fetch('/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json().catch(() => ({}));
+            if (response.ok) {
+              console.log('Inicio de sesión exitoso', data);
+              // aquí podrías redirigir manualmente: window.location = '/';
+            } else {
+              console.error('Error en las credenciales', data);
+              inputs.forEach(i => i.style.borderColor = 'red');
+              invalid.style.display = 'block';
+            }
+          } catch (error) {
+            console.error('Error al realizar la solicitud:', error);
+          }
+        })();
+      });
+
+    });
+  </script>
 </head>
 <body>
 
@@ -185,7 +237,6 @@
       </div>
 
       <form action="/login" method="POST">
-        
         <div class="form-group">
           <label for="username">Usuario</label>
           <input type="text" placeholder="Ingresa tu usuario" id="username" name="username" required>
@@ -195,11 +246,12 @@
           <label for="password">Contraseña</label>
           <input type="password" id="password" placeholder="Ingresa tu contraseña" name="password" required>
         </div>
-
+        
         <div class="links">
-            <span></span> <a href="#">¿Olvidaste tu contraseña?</a>
+          <span></span> <a href="#">¿Olvidaste tu contraseña?</a>
         </div>
         
+        <span id="invalid" class="invalid">El usuario o contraseña son invalidos.</span>
         <button type="submit">Iniciar Sesión</button>
       
       </form>
