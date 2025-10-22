@@ -101,7 +101,6 @@
 
       .info-card a:hover {
         color: #ffd700;
-        text-decoration: underline;
       }
 
       .synopsis-card {
@@ -301,7 +300,7 @@
           <div class="cast-grid">
             <% movie.cast.sort((a,b) => a.cast_order - b.cast_order).slice(0,
             12).forEach(actor => { %>
-            <div class="actor-card">
+            <a href="/actor/<%= actor.actor_id %>" class="actor-card"><%= actor.actor_name %>
               <span
                 style="
                   display: block;
@@ -310,14 +309,12 @@
                   margin-bottom: 8px;
                   font-weight: 400;
                 "
-                ><a href="/actor/<%= actor.actor_id %>"
-                  ><%= actor.actor_name %></a
-                ></span
-              >
+                ></span>
+
               <% if (actor.character_name) { %>
               <p class="character"><%= actor.character_name %></p>
               <% } %>
-            </div>
+              </a>
             <% }) %>
           </div>
         </div>
