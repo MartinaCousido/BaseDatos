@@ -10,3 +10,5 @@ CREATE TABLE users.user (
 	email varchar(100) default null,
 	CONSTRAINT pk_user PRIMARY KEY (user_id)
 );
+
+CREATE TABLE users.refresh_tokens (id UUID PRIMARY KEY, user_id INT NOT NULL, expires_at TIMESTAMP NOT NULL);

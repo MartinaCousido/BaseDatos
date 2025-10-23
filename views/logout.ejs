@@ -183,10 +183,27 @@
 
   <script>
     window.addEventListener("DOMContentLoaded", (event) => {
-        localStorage.removeItem('user');
-        setInterval(() => {
-            window.location = '/';
-        }, 3000);
+      const title = document.querySelector('h1');
+      ( async () => {
+        title.textContent = 'Cerrando sesion...';
+        try {
+          const response = await fetch('/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            bdoy: {}
+          })
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok)
+            title.textContent = 'No se ha cerrado la sesion';
+          else
+            title.textContent = 'Sesion cerrada';
+
+          window.localStorage.removeItem('user');
+          setInterval(() => {window.location = '/'}, 2000)
+        } catch(err) {console.log(err)}
+      })();
     });
   </script>
 </head>
@@ -196,7 +213,7 @@
     <div class="login-container">
       
       <div class="header-container">
-          <h1>Has cerrado sesión exitosamente</h1>
+          <h1 id='title'></h1>
       </div>
 
     </div>

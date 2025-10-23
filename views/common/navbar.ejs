@@ -124,23 +124,59 @@
     </style>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
-      // get the user information
-      const user = window.localStorage.getItem('user') ?? null;
+      // get the user information (try localStorage, fallback to /profile)
+      const raw = window.localStorage.getItem('user');
       const navUserDiv = document.querySelector('.nav-user');
 
-      if (user != null) {
-        const parsedUser = JSON.parse(user).data;
-            navUserDiv.innerHTML = `
-              <a href="/perfil" style="color: #fff; text-decoration: none; margin-right: 15px;">Hola, ${parsedUser.username}</a>
-              <a href="/logout" style="color: #fff; text-decoration: none;">Cerrar sesión</a>
-            `;
-      } else {
-          navUserDiv.innerHTML = `
-            <a href="/login" style="color: #fff; text-decoration: none; margin-right: 15px;">Iniciar sesión</a>
-            <a href="/register" style="color: #fff; text-decoration: none;">Registrarse</a>
-          `;
+      function renderLoggedIn(username) {
+        navUserDiv.innerHTML = `
+          <a href="/perfil" style="color: #fff; text-decoration: none; margin-right: 15px;">Hola, ${username}</a>
+          <a href="/logout" style="color: #fff; text-decoration: none;">Cerrar sesión</a>
+        `;
+      }
+
+      function renderLoggedOut() {
+        navUserDiv.innerHTML = `
+          <a href="/login" style="color: #fff; text-decoration: none; margin-right: 15px;">Iniciar sesión</a>
+          <a href="/register" style="color: #fff; text-decoration: none;">Registrarse</a>
+        `;
+      }
+
+      let username = null;
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          // support multiple shapes: { user: {...} }, { data: {...} }, or plain user object
+          const u = parsed.user ?? parsed.data ?? parsed;
+          username = u && (u.username || u.name || u.email);
+        } catch (e) {
+          console.warn('Could not parse stored user', e);
         }
-      });
+      }
+
+      if (username) {
+        renderLoggedIn(username);
+      } else {
+        // try to fetch authoritative profile from server (cookies must be sent)
+        (async () => {
+          try {
+            const resp = await fetch('/profile', { credentials: 'include' });
+            if (resp.ok) {
+              const json = await resp.json();
+              if (json.ok && json.user) {
+                renderLoggedIn(json.user.username || json.user.name || json.user.email);
+                // store minimal user in localStorage for faster next render
+                try { window.localStorage.setItem('user', JSON.stringify(json.user)); } catch(e){}
+                return;
+              }
+            }
+          } catch (err) {
+            // ignore
+          }
+          renderLoggedOut();
+        })();
+      }
+    });
 
     </script>
   </head>

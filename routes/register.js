@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 require("dotenv").config();
 const { Pool } = require("pg");
-const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 
 const db = new Pool({
   user: process.env.DB_USER,
@@ -13,9 +13,10 @@ const db = new Pool({
   options: `-c search_path=users,public`,
 });
 
-async function sha256(message) {
-  // Use Node's crypto module to compute SHA-256 and return hex string
-  return crypto.createHash('sha256').update(String(message)).digest('hex');
+// helper: hash password with bcrypt
+async function hashPassword(password) {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(String(password), salt);
 }
 
 router.get('/register', (req, res) => {
@@ -30,13 +31,14 @@ router.post('/register', async (req, res) => {
             [name, email, username]
         );
         if (existingUser.rows.length > 0) {
-            return res.status(400).send('El usuario, email o nombre de usuario ya existe.');
+            return res.status(400).json({ ok: false, message: 'El usuario, email o nombre de usuario ya existe.' });
         }
+        const hashed = await hashPassword(password);
         await db.query(
             'INSERT INTO "user" (name, email, username, hpassword) VALUES ($1, $2, $3, $4)',
-            [name, email, username, await sha256(password)]
+            [name, email, username, hashed]
         );
-        res.status(201).send('Usuario registrado exitosamente.');
+        res.status(201).json({ ok: true, message: 'Usuario registrado exitosamente.' });
     }
     catch (err) {
         console.error(err);

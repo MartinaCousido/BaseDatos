@@ -187,32 +187,34 @@
       const loginForm = document.querySelector("form");
       const inputs = loginForm.querySelectorAll("input");
       const invalid = document.querySelector("#invalid");
+
       inputs.forEach(input => {
         input.addEventListener("click", () => {
           invalid.style.display = "none"
           inputs.forEach(input => input.style.borderColor = "#ccc"); // reset border color
         });
       })
+
       loginForm.addEventListener("submit", (event) => {
         // hago el post 
         event.preventDefault(); // Evita el envío tradicional del formulario
         const formData = new FormData(loginForm);
         const username = formData.get("username");
         const password = formData.get("password");
-        console.log("Intentando iniciar sesión con:", { username, password});
 
         (async () => {
           try {
             const response = await fetch('/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
               body: JSON.stringify({ username, password })
             });
 
             const data = await response.json().catch(() => ({}));
-            console.log('Datos recibidos del servidor:', data, String(data));
             if (response.ok) {
-              window.localStorage.setItem('user',JSON.stringify(data));
+              // prefer not to store tokens in localStorage; store only minimal public user info if needed
+              window.localStorage.setItem('user', JSON.stringify(data.user || {}));
               window.location = '/';
             } else {
               inputs.forEach(i => i.style.borderColor = 'red');
@@ -225,6 +227,17 @@
       });
 
     });
+    // Try to refresh access token on page load (if refresh cookie exists)
+    (async function tryRefreshOnLoad() {
+      try {
+        const resp = await fetch('/auth/refresh', { method: 'POST', credentials: 'include' });
+        if (resp.ok) {
+          console.log('Access token refreshed on load');
+        }
+      } catch (e) {
+        // no-op
+      }
+    })();
   </script>
 </head>
 <body>
