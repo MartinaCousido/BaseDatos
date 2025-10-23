@@ -46,7 +46,7 @@
       <div class="results-popularity">
       <% movies.forEach((movie, index) => { %>
       <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
-        <img class="card-img" src="./imgs/poster.jpg" alt="" />
+        <img class="card-img" src="<%= movie.poster_url %>" alt="<%= movie.title %>" />
         <div class="card-info">
           <h3 class="card-title"><%= movie.title %></h3>
           <span class="card-popularity">#<%= index + 1%></span>
