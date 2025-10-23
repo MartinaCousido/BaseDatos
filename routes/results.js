@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { getMoviePoster } = require('../tmdb');
+const { getMoviePoster, getPersonPhoto } = require('../tmdb');
 
 async function getMoviesByGenre(genre) {
     try {
@@ -74,12 +74,23 @@ async function addPostersToMovies(movies) {
             const posterUrl = await getMoviePoster(movie.title, year);
             return {
                 ...movie,
-                poster_url: posterUrl || '/imgs/poster.jpg'
+                poster_url: posterUrl || '/imgs/poster.png'
             };
         })
     );
 }
 
+async function addPhotosToPersons(persons) {
+    return await Promise.all(
+        persons.map(async (person) => {
+            const photoUrl = await getPersonPhoto(person.person_name);
+            return {
+                ...person,
+                photo_url: photoUrl || '/imgs/Tom_Hanks.png'
+            };
+        })
+    );
+}
 // --- RUTA DE BÚSQUEDA ---
 router.get('/buscar', async (req, res) => {
     const searchTerm = req.query.q || '';
@@ -91,13 +102,15 @@ router.get('/buscar', async (req, res) => {
 
         // Agregar posters a las películas
         const moviesWithPosters = await addPostersToMovies(moviesData);
+        const actorsWithPhotos = await addPhotosToPersons(actorsData);
+        const directorsWithPhotos = await addPhotosToPersons(directorsData);
 
         res.render('resultado', { 
             toSearch: searchTerm,
             genre: null,
             movies: moviesWithPosters,
-            actors: actorsData,
-            directors: directorsData,
+            actors: actorsWithPhotos,
+            directors: directorsWithPhotos,
         });
 
     } catch (err) {

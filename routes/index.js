@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
                 console.log(`Poster URL: ${posterUrl}`);
                 return {
                     ...movie,
-                    poster_url: posterUrl || '/imgs/poster.jpg'
+                    poster_url: posterUrl || '/imgs/poster.png'
                 };
             })
         );
