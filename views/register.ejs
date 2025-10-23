@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - ScreenHub</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+      background-color: #f0f2f5; /* Un fondo general suave */
+    }
+
+    /* --- Panel Derecho (Imagen) --- */
+    .right-panel {
+      background-image: url('./imgs/poster_login.png'); /* Asegúrate que esta ruta es correcta */
+      background-size: cover;
+      background-position: center;
+      width: 50%;
+      height: 100vh;
+    }
+
+    /* --- Panel Izquierdo (Formulario) --- */
+    .left-panel {
+      display: flex;
+      width: 50%;
+      flex-direction: column;
+      justify-content: center; /* Centra verticalmente */
+      align-items: center;   /* Centra horizontalmente */
+      background-color: #ffffff; /* Un fondo blanco limpio para el panel */
+      height: 100vh;
+      padding: 40px;
+      box-sizing: border-box; /* Asegura que el padding no rompa el layout */
+    }
+
+    /* Contenedor del formulario para limitar su ancho */
+    .login-container {
+      width: 100%;
+      max-width: 400px; /* Ancho máximo para el formulario */
+    }
+
+    .login-container h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #1c1c1c; /* Un color oscuro para el título */
+      text-align: center;
+      margin-bottom: 25px;
+      /* Mantenemos tu color de acento para un detalle */
+      border-bottom: 4px solid #FFC107;
+      padding-bottom: 10px;
+      display: inline-block; /* Para que el borde no ocupe todo el ancho */
+    }
+
+    /* Centrar el H1 */
+    .header-container {
+      text-align: center;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+
+    .login-container form {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 20px; /* Espacio entre los grupos del formulario */
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px; /* Espacio entre la etiqueta y el input */
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-group input {
+      font-size: 1rem;
+      padding: 12px 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    /* Efecto al seleccionar el input */
+    .form-group input:focus {
+      outline: none;
+      border-color: #FFC107;
+      box-shadow: 0 0 8px rgba(255, 193, 7, 0.4);
+    }
+
+    /* Estilo del botón */
+    button[type="submit"] {
+      background-color: #FFC107; /* Tu color de acento */
+      color: #111;
+      font-weight: bold;
+      font-size: 1.1rem;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.1s;
+      margin-top: 10px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #e6ac00; /* Un poco más oscuro al pasar el mouse */
+    }
+
+    button[type="submit"]:active {
+      transform: scale(0.98); /* Efecto al presionar */
+    }
+    
+    .links {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: -10px; /* Acercarlo al input de password */
+        font-size: 0.9rem;
+    }
+
+    .links a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .links a:hover {
+        text-decoration: underline;
+    }
+
+    .signup-link {
+        margin-top: 25px;
+        text-align: center;
+        color: #555;
+    }
+    .signup-link a {
+        color: #007bff;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .signup-link a:hover {
+        text-decoration: underline;
+    }
+
+    .message {
+      display: none;
+      color: red;
+      text-align: center;
+      margin-bottom: -10px;
+    }
+
+    /* --- Responsividad para móviles --- */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      
+      /* Ocultamos la imagen en móviles */
+      .right-panel {
+        display: none;
+      }
+
+      /* El panel de login ocupa toda la pantalla */
+      .left-panel {
+        width: 100%;
+        height: 100vh;
+        justify-content: start; /* Alinea arriba */
+        padding-top: 60px;
+      }
+
+      .login-container {
+        max-width: 100%;
+        padding: 0 20px;
+        box-sizing: border-box;
+      }
+    }
+
+  </style>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", (event) => {
+      // Aquí puedes agregar cualquier script necesario para la página de registro
+      const registerForm = document.querySelector("form");
+      const inputs = registerForm.querySelectorAll("input");
+      const message = document.querySelector("#message");
+
+      inputs.forEach(input => {
+        input.addEventListener("click", () => {
+          message.textContent = "";
+          message.style.display = "none";
+          inputs.forEach(input => input.style.borderColor = "#ccc"); // reset border color
+        });
+      })
+
+      registerForm.addEventListener("submit", (event) => {
+        // hago el post 
+        event.preventDefault(); // Evita el envío tradicional del formulario
+        const formData = new FormData(registerForm);
+        const username = formData.get("username");
+        const password = formData.get("password");
+        const name = formData.get("name");
+        const email = formData.get("email");
+        console.log(formData)
+        if (!username || !password || !name || !email) {
+          inputs.forEach(i => i.style.borderColor = 'red');
+          message.textContent = 'Por favor, completa todos los campos.';
+          message.style.display = 'block';
+          return;
+        }
+
+        if (!/\S+@\S+\.\S+/.test(email)) {
+          inputs.forEach(i => i.style.borderColor = 'red');
+          message.textContent = 'Por favor, ingresa un email válido.';
+          message.style.display = 'block';
+          return;
+        }
+
+        if (password.length < 6) {
+          inputs.forEach(i => i.style.borderColor = 'red');
+          message.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+          message.style.display = 'block';
+          return;
+        }
+
+        if (message.style.display === 'block') {
+          return; // evita enviar si hay errores visibles
+        }
+
+        (async () => {
+          try {
+            const response = await fetch('/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, password, name, email })
+            });
+
+            const data = await response.json().catch(() => ({}));
+            if (response.ok) {
+              console.log('Registro exitoso', data);
+              message.textContent = 'Registro exitoso. Redirigiendo al login...';
+              message.style.color = 'green';
+              message.style.display = 'block';
+              setInterval(() => {
+                window.location = '/login';
+              }, 3000);
+            } else {
+              console.error('Error en las credenciales', data);
+              inputs.forEach(i => i.style.borderColor = 'red');
+              message.textContent = 'El usuario ya tiene una cuenta registrada.';
+              message.style.display = 'block';
+            }
+          } catch (error) {
+            console.error('Error al realizar la solicitud:', error);
+          }
+        })();
+      });
+
+    });
+  </script>
+</head>
+<body>
+
+  <div class="left-panel">
+    <div class="login-container">
+      
+      <div class="header-container">
+          <h1>Register</h1>
+      </div>
+
+      <form action="/register" method="POST">
+        <div class="form-group">
+          <label for="name">Nombre Completo</label>
+          <input type="text" placeholder="Ingresa tu nombre completo" id="name" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="text" placeholder="example@mail.com" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" placeholder="Ingresa tu usuario" id="username" name="username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" placeholder="Ingresa tu contraseña" name="password" required>
+        </div>
+        
+        <span id="message" class="message"></span>
+        <button type="submit">Registrar</button>
+      
+      </form>
+    </div>
+  </div>
+
+  <div class="right-panel"></div>
+
+</body>
+</html>
