@@ -12,3 +12,4 @@ CREATE TABLE users.user (
 );
 
 CREATE TABLE users.refresh_tokens (id UUID PRIMARY KEY, user_id INT NOT NULL, expires_at TIMESTAMP NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON users.refresh_tokens(user_id);
