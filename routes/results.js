@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const { getMoviePoster } = require('../tmdb');
 
 async function getMoviesByGenre(genre) {
     try {
@@ -22,7 +23,6 @@ async function getMoviesByGenre(genre) {
 }
 
 async function getMoviesForSearch(toSearch) {
-    // Usamos UNION ALL con prioridad, pero sin LIMIT/OFFSET para traer todo
     const query = `
         (SELECT *, 1 as priority FROM movie WHERE title ILIKE $1)
         UNION ALL
@@ -66,22 +66,36 @@ async function getPeopleForSearch(toSearch, type = 'actor') {
     }
 }
 
-// --- RUTA DE BÚSQUEDA (SIMPLE Y EFICIENTE) ---
-router.get('/buscar', async (req, res) => {
+// Función helper para agregar posters a las películas
+async function addPostersToMovies(movies) {
+    return await Promise.all(
+        movies.map(async (movie) => {
+            const year = movie.release_date ? new Date(movie.release_date).getFullYear() : null;
+            const posterUrl = await getMoviePoster(movie.title, year);
+            return {
+                ...movie,
+                poster_url: posterUrl || '/imgs/poster.jpg'
+            };
+        })
+    );
+}
 
+// --- RUTA DE BÚSQUEDA ---
+router.get('/buscar', async (req, res) => {
     const searchTerm = req.query.q || '';
 
     try {
-        // Obtenemos las listas completas de resultados
         const moviesData = await getMoviesForSearch(searchTerm);
         const actorsData = await getPeopleForSearch(searchTerm, 'actor');
         const directorsData = await getPeopleForSearch(searchTerm, 'director');
 
-        // Las enviamos a la plantilla
+        // Agregar posters a las películas
+        const moviesWithPosters = await addPostersToMovies(moviesData);
+
         res.render('resultado', { 
             toSearch: searchTerm,
             genre: null,
-            movies: moviesData,
+            movies: moviesWithPosters,
             actors: actorsData,
             directors: directorsData,
         });
@@ -92,22 +106,26 @@ router.get('/buscar', async (req, res) => {
     }
 });
 
-// --- FUNCIONES QUE TRAEN TODOS LOS RESULTADOS (SIN PAGINACIÓN) ---
+// --- BÚSQUEDA POR GÉNERO ---
 router.get('/buscar/:genre', async (req, res) => {
     const genreToSearch = req.params.genre;
-    try{
+    try {
         const response = await getMoviesByGenre(genreToSearch);
+        
+        // Agregar posters a las películas
+        const moviesWithPosters = await addPostersToMovies(response);
+        
         res.render('resultado', {
             toSearch: null,
             genre: genreToSearch,
-            movies: response,
+            movies: moviesWithPosters,
             actors: [],
             directors: []
-        })
-    }catch ( error ) {
+        });
+    } catch (error) {
         console.log(error);
-        res.status(500).send('Error en la busqueda.')
+        res.status(500).send('Error en la búsqueda.');
     }
-})
+});
 
 module.exports = router;
