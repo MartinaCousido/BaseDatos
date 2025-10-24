@@ -74,7 +74,7 @@
                             const relacionadoSpan = item.priority === 3 ? '<span>Relacionado</span>' : '';
                             cardHTML = `
                                 <a href="/pelicula/${item.movie_id}" class="result-card">
-                                    <img class="card-img" src="${item.poster_url || '/imgs/poster.png'}"/>
+                                    <img class="card-img" src="${item.poster_url || '/imgs/poster.jpg'}"/>
                                     <div class="card-info">
                                         <h3 class="card-title">${item.title}</h3>
                                         ${relacionadoSpan}
@@ -85,7 +85,7 @@
                             const personType = state.activeTab === 'actores' ? 'actor' : 'director';
                             cardHTML = `
                                 <a href="/${personType}/${item.person_id}" class="result-card">
-                                    <img class="card-img" src="${item.photo_url || '/imgs/Tom_Hanks.png'}"/>
+                                    <img class="card-img" src="/imgs/Tom_Hanks.jpg"/>
                                     <div class="card-info">
                                         <h3 class="card-title">${item.person_name}</h3>
                                     </div>
