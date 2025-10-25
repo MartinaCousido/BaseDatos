@@ -11,16 +11,77 @@
       display: flex;
       flex-direction: row;
       height: 100vh;
-      background-color: #f0f2f5; /* Un fondo general suave */
+      background-color: #2a2a2a;
     }
 
-    /* --- Panel Derecho (Imagen) --- */
+    /* --- Panel Derecho (Carrusel) --- */
     .right-panel {
-      background-image: url('./imgs/poster_login.png'); /* Asegúrate que esta ruta es correcta */
-      background-size: cover;
-      background-position: center;
+      position: relative;
       width: 50%;
       height: 100vh;
+      overflow: hidden;
+      background-color: #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px; /* Padding para el reborde */
+      box-sizing: border-box;
+    }
+
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 20px; /* Bordes redondeados */
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); /* Sombra para profundidad */
+    }
+
+    .carousel-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #2a2a2a;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .carousel-slide.active {
+      opacity: 1;
+    }
+
+    .carousel-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: transparent;
+      padding: 30px;
+      color: white;
+      border-radius: 0 0 20px 20px;
+    }
+
+    .carousel-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #FFC107;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .carousel-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      color: #FFC107;
+      font-size: 1.2rem;
     }
 
     /* --- Panel Izquierdo (Formulario) --- */
@@ -28,77 +89,77 @@
       display: flex;
       width: 50%;
       flex-direction: column;
-      justify-content: center; /* Centra verticalmente */
-      align-items: center;   /* Centra horizontalmente */
-      background-color: #ffffff; /* Un fondo blanco limpio para el panel */
+      justify-content: center;
+      align-items: center;
+      background-color: #2a2a2a;
       height: 100vh;
       padding: 40px;
-      box-sizing: border-box; /* Asegura que el padding no rompa el layout */
+      box-sizing: border-box;
     }
 
-    /* Contenedor del formulario para limitar su ancho */
     .login-container {
       width: 100%;
-      max-width: 400px; /* Ancho máximo para el formulario */
+      max-width: 400px;
     }
 
     .login-container h1 {
       font-size: 3rem;
       font-weight: 700;
-      color: #1c1c1c; /* Un color oscuro para el título */
+      color: #FFC107;
       text-align: center;
       margin-bottom: 25px;
-      /* Mantenemos tu color de acento para un detalle */
       border-bottom: 4px solid #FFC107;
       padding-bottom: 10px;
-      display: inline-block; /* Para que el borde no ocupe todo el ancho */
+      display: inline-block;
     }
 
-    /* Centrar el H1 */
     .header-container {
       text-align: center;
       width: 100%;
       margin-bottom: 20px;
     }
 
-
     .login-container form {
       display: flex;
       flex-direction: column;
       width: 100%;
-      gap: 20px; /* Espacio entre los grupos del formulario */
+      gap: 20px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 8px; /* Espacio entre la etiqueta y el input */
+      gap: 8px;
     }
 
     .form-group label {
       font-weight: 600;
-      color: #333;
+      color: #ffffff;
     }
 
     .form-group input {
       font-size: 1rem;
       padding: 12px 15px;
-      border: 1px solid #ccc;
+      border: 1px solid #555;
       border-radius: 8px;
+      background-color: #3a3a3a;
+      color: #ffffff;
       transition: border-color 0.3s, box-shadow 0.3s;
     }
 
-    /* Efecto al seleccionar el input */
+    .form-group input::placeholder {
+      color: #999;
+    }
+
     .form-group input:focus {
       outline: none;
       border-color: #FFC107;
       box-shadow: 0 0 8px rgba(255, 193, 7, 0.4);
     }
 
-    /* Estilo del botón */
     button[type="submit"] {
-      background-color: #FFC107; /* Tu color de acento */
-      color: #111;
+      background-color: #FFC107;
+      color: #1a1a1a;
       font-weight: bold;
       font-size: 1.1rem;
       border: none;
@@ -110,65 +171,68 @@
     }
 
     button[type="submit"]:hover {
-      background-color: #e6ac00; /* Un poco más oscuro al pasar el mouse */
+      background-color: #FFD54F;
     }
 
     button[type="submit"]:active {
-      transform: scale(0.98); /* Efecto al presionar */
+      transform: scale(0.98);
     }
     
     .links {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        margin-top: -10px; /* Acercarlo al input de password */
-        font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: -10px;
+      font-size: 0.9rem;
     }
 
     .links a {
-        color: #007bff;
-        text-decoration: none;
+      color: #FFC107;
+      text-decoration: none;
     }
+
     .links a:hover {
-        text-decoration: underline;
+      text-decoration: underline;
+      color: #FFD54F;
     }
 
     .signup-link {
-        margin-top: 25px;
-        text-align: center;
-        color: #555;
+      margin-top: 25px;
+      text-align: center;
+      color: #cccccc;
     }
+
     .signup-link a {
-        color: #007bff;
-        font-weight: 600;
-        text-decoration: none;
+      color: #FFC107;
+      font-weight: 600;
+      text-decoration: none;
     }
+
     .signup-link a:hover {
-        text-decoration: underline;
+      text-decoration: underline;
+      color: #FFD54F;
     }
-    .invalid {
+
+    .invalid, .message {
       display: none;
-      color: red;
+      color: #ff4444;
       text-align: center;
       margin-bottom: -10px;
     }
 
-    /* --- Responsividad para móviles --- */
     @media (max-width: 768px) {
       body {
         flex-direction: column;
       }
       
-      /* Ocultamos la imagen en móviles */
       .right-panel {
         display: none;
       }
 
-      /* El panel de login ocupa toda la pantalla */
       .left-panel {
         width: 100%;
         height: 100vh;
-        justify-content: start; /* Alinea arriba */
+        justify-content: start;
         padding-top: 60px;
       }
 
@@ -178,8 +242,7 @@
         box-sizing: border-box;
       }
     }
-
-  </style>
+</style>
 
   <script>
     window.addEventListener("DOMContentLoaded", (event) => {
@@ -276,7 +339,50 @@
     </div>
   </div>
 
-  <div class="right-panel"></div>
+  <div class="right-panel">
+    <div class="carousel-container">
+      <div class="carousel-loading">Cargando películas...</div>
+    </div>
+</div>
+
+<script>
+  // Carrusel de películas
+  (async function initCarousel() {
+    try {
+      const response = await fetch('/api/popular-movies');
+      const movies = await response.json();
+      
+      const container = document.querySelector('.carousel-container');
+      container.innerHTML = '';
+      
+      movies.forEach((movie, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide' + (index === 0 ? ' active' : '');
+        slide.style.backgroundImage = `url('${movie.poster_url}')`;
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'carousel-overlay';
+        overlay.innerHTML = `<h3 class="carousel-title">${movie.title}</h3>`;
+        
+        slide.appendChild(overlay);
+        container.appendChild(slide);
+      });
+      
+      // Cambiar slide cada 4 segundos
+      let currentSlide = 0;
+      const slides = document.querySelectorAll('.carousel-slide');
+      
+      setInterval(() => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+      }, 4000);
+      
+    } catch (error) {
+      console.error('Error cargando carrusel:', error);
+    }
+  })();
+</script>
 
 </body>
 </html>
