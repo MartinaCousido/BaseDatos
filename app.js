@@ -21,6 +21,9 @@ const directorRoutes = require('./routes/director');
 const loginRoutes = require('./routes/login');
 const registerRoutes = require('./routes/register')
 const profileRoutes = require('./routes/profile');
+const navbarRoutes = require('./routes/utils');
+
+app.use(navbarRoutes);
 
 app.use([
     indexRoutes,
@@ -30,7 +33,8 @@ app.use([
     directorRoutes,
     loginRoutes,
     registerRoutes,
-    profileRoutes
+    profileRoutes,
+    navbarRoutes
 ]);
 
 app.listen(port, () => {
