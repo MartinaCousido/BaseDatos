@@ -8,12 +8,13 @@ body {
 
 /* --- ESTILOS DE LA VISTA INICIAL (HERO) --- */
 .hero {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     background-color: #3a3a3a;
+    padding-top: 80px;
 }
 
 .hero-content form {
@@ -45,29 +46,12 @@ body {
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Estilo común para los buscadores */
-.nav-search input {
-    font-size: 1.1rem;
-    border-radius: 8px 0 0 8px;
-    border-color: transparent;
-    background-color: #ffffff;
-    color: #2a2a2a;
-    height: 100%;
-    width: 60%;
-    outline: none;
-    transition: all 0.3s ease;
+/* ✅ OCULTAR COMPLETAMENTE el search bar de la navbar */
+.navbar .nav-search {
+    display: none !important;
 }
 
-.nav-search {
-    display: flex;
-    justify-content: center;
-    align-items: start;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.hero-content form input:focus,
-.nav-search input:focus {
+.hero-content form input:focus {
     background-color: #fff;
 }
 
@@ -75,8 +59,7 @@ body {
     color: #888;
 }
 
-.hero-content form button,
-.nav-search button {
+.hero-content form button {
     padding: 1vh;
     font-size: 1.1rem;
     border-color: transparent;
@@ -88,8 +71,7 @@ body {
     font-weight: 600;
 }
 
-.hero-content form button:hover,
-.nav-search button:hover {
+.hero-content form button:hover {
     background-color: #FFD54F;
 }
 
@@ -103,13 +85,7 @@ body {
     backdrop-filter: blur(10px);
     padding: 15px 0;
     z-index: 1000;
-    transition: transform 0.4s ease-in-out;
-    transform: translateY(-100%);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.navbar.visible {
-    transform: translateY(0);
 }
 
 .nav-container {
@@ -133,6 +109,14 @@ body {
     color: #FFD54F;
 }
 
+.nav-filters {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+
 .nav-filters a {
     color: #ffffff;
     text-decoration: none;
@@ -148,17 +132,28 @@ body {
     color: #FFC107;
 }
 
-.nav-search input {
-    width: 250px;
-    padding: 10px 18px;
-    font-size: 0.9rem;
-    border-radius: 8px 0 0 8px;
+/* ✅ NUEVOS ESTILOS para los botones de sesión */
+.nav-auth {
+    display: flex;
+    gap: 10px;
 }
 
-.nav-search button {
+.nav-auth a {
+    background-color: #FFC107;
+    color: #ffffff;
     padding: 10px 20px;
-    font-size: 0.9rem;
-    border-radius: 0 8px 8px 0;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    margin: 0 !important; /* Sobrescribe el margin de .nav-filters a */
+}
+
+.nav-auth a:hover {
+    background-color: #FFC107;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
 }
 
 /* --- CONTENIDO DE EJEMPLO --- */
@@ -196,7 +191,7 @@ body {
 .result-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
-    border-color: #FFC107; /* Resaltamos el borde con amarillo */
+    border-color: #FFC107;
 }
 
 .card-info {
@@ -228,5 +223,4 @@ body {
     font-weight: bold;
     font-size: 1.5rem;
 }
-
 
