@@ -167,6 +167,13 @@
             }
         }
     </style>
+    <script>
+        async function getLink() {
+            return await fetch('/actor/<%= actorId %>/photos')
+            .then(res => res.json()).catch(err => console.error(err));
+        }
+        console.log(getLink());
+    </script>
 </head>
 <body>
     <%- include('common/navbar.ejs', { toSearch: actorName }) -%>
