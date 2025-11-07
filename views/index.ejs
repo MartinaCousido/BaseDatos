@@ -13,7 +13,7 @@
         // Escucha el evento de scroll en la ventana
         window.addEventListener("scroll", () => {
           // Si el scroll vertical es mayor a 50 píxeles...
-          if (window.scrollY > 50) {
+          if (window.scrollY > 500) {
             // ...añade la clase 'visible' a la navbar para mostrarla
             navbar.classList.add("visible");
           } else {
@@ -46,7 +46,7 @@
       <div class="results-popularity">
       <% movies.forEach((movie, index) => { %>
       <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
-        <img class="card-img" src="./imgs/poster.jpg" alt="" />
+        <img class="card-img" src="<%= movie.poster_url %>" alt="<%= movie.title %>" />
         <div class="card-info">
           <h3 class="card-title"><%= movie.title %></h3>
           <span class="card-popularity">#<%= index + 1%></span>
@@ -56,12 +56,6 @@
     </div>
     </main>
 
-    <script src="script.js"></script>
-    
-    <%- include('common/footer.ejs') -%>
-
-
-  </body>
 
 
 </html>

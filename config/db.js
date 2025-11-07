@@ -7,7 +7,8 @@ const db = new Pool({
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  options: `-c search_path=movies,public`,
+  // include 'users' schema so shared pool can access user tables
+  options: `-c search_path=users,movies,public`,
 });
 
 module.exports = db;
