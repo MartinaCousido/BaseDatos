@@ -455,3 +455,84 @@ h1 {
     font-size: 1rem;
     white-space: nowrap; /* Evita que "Página X de Y" se parta en dos líneas */
 }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main, .contenido {
+  flex: 1; /* hace que el contenido crezca para empujar el footer hacia abajo si hay poco contenido */
+}
+
+
+/*=======FOOTER======*/
+
+footer {
+  width: 100%;
+  background-color: #0d0d0d;
+  color: #d9d9d9;
+  padding: 40px 20px;
+  font-family: Arial, sans-serif;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
+  text-align: center;
+}
+
+.footer-section h2,
+.footer-section h3 {
+  color: #ffd60a;
+  margin-bottom: 10px;
+}
+
+.footer-section a {
+  color: #ffd60a;
+  text-decoration: none;
+}
+
+.footer-section a:hover {
+  text-decoration: underline;
+}
+
+.footer hr {
+  border: 0;
+  border-top: 1px solid #333;
+  margin: 30px 0;
+}
+
+.footer p {
+  text-align: center;
+  color: #808080;
+  margin: 0;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-detail-container {
+  flex: 1; /* hace que el contenido empuje el footer hacia abajo */
+  padding: 5% 10%;
+}
+
+footer {
+  width: calc(100% + 40%); /* 100% + 10% padding de cada lado */
+  margin-left: -20%;
+  background-color: #0d0d0d;
+  color: #d9d9d9;
+  padding: 40px 20px;
+}
+
+
