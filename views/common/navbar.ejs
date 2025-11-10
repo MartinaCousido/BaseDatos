@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
   <style>
 /* --- BARRA DE BÚSQUEDA --- */
 .nav-search {
@@ -221,8 +222,19 @@
   </nav>
 
   <script>
+  // ✅ Solo decodificar los idiomas visualmente
+  function decodeUnicode(text) {
+    if (typeof text !== "string") return text;
+    try {
+      return text.replace(/u([0-9a-fA-F]{4})/g, (_, hex) =>
+        String.fromCharCode(parseInt(hex, 16))
+      );
+    } catch {
+      return text;
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", async () => {
-    // --- Cargar datos de géneros, países e idiomas ---
     try {
       const res = await fetch("/navbar-data");
       const data = await res.json();
@@ -247,8 +259,10 @@
       const langMenu = document.getElementById("languagesMenu");
       idiomas.forEach(i => {
         const a = document.createElement("a");
+        // 🔗 Mantiene el valor original (para búsqueda correcta)
         a.href = `/buscar/idioma/${encodeURIComponent(i.language_name)}`;
-        a.textContent = i.language_name;
+        // 📝 Muestra el texto decodificado visualmente
+        a.textContent = decodeUnicode(i.language_name);
         langMenu.appendChild(a);
       });
     } catch (err) {

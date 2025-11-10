@@ -31,12 +31,29 @@ async function getAllLanguages() {
     }
 }
 
+async function getAllCountries() {
+    try {
+        const result = await db.query(`
+            SELECT DISTINCT country_name 
+            FROM country 
+            JOIN production_country ON country.country_id = production_country.country_id
+            ORDER BY country_name
+        `);
+        return result.rows; 
+    } catch (error) {
+        console.error("Error al cargar países:", error);
+        return [];
+    }
+}
+
 
 router.get('/navbar-data', async (req, res) => {
     try {
         const genres = await getAllGenres();
         const countries = await getAllCountries(); 
         const idiomas = await getAllLanguages();
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
         res.json({
             genres,
@@ -54,20 +71,6 @@ router.get('/navbar-data', async (req, res) => {
     }
 });
 
-async function getAllCountries() {
-    try {
-        const result = await db.query(`
-            SELECT DISTINCT country_name 
-            FROM country 
-            JOIN production_country ON country.country_id = production_country.country_id
-            ORDER BY country_name
-        `);
-        return result.rows; 
-    } catch (error) {
-        console.error("Error al cargar países:", error);
-        return [];
-    }
-}
 
 async function getMoviesByGenre(genre) {
     try {
@@ -146,7 +149,7 @@ router.get('/buscar/idioma/:language', async (req, res) => {
             FROM movie m
             JOIN movie_languages ml ON m.movie_id = ml.movie_id
             JOIN language l ON ml.language_id = l.language_id
-            WHERE l.language_name ILIKE $1
+            WHERE l.language_name = $1
         `, [languageToSearch]);
 
         res.render('resultado', {
