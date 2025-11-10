@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="\css\index.css" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-      // Espera a que la página se cargue
       window.addEventListener("DOMContentLoaded", (event) => {
         const navbar = document.querySelector(".navbar");
         const movies = <%- JSON.stringify(movies) %>;
@@ -17,11 +16,6 @@
             const imgElement = document.querySelector(
               `.result-card[href="/pelicula/${movie.movie_id}"] .card-img`
             );
-
-            console.log({
-                title: movie.title,
-                year: movie.release_date
-              })
 
             axios({
               method: 'GET',
@@ -41,14 +35,11 @@
 
           });
         }
-        // Escucha el evento de scroll en la ventana
+        
         window.addEventListener("scroll", () => {
-          // Si el scroll vertical es mayor a 50 píxeles...
           if (window.scrollY > 500) {
-            // ...añade la clase 'visible' a la navbar para mostrarla
             navbar.classList.add("visible");
           } else {
-            // ...si no, quita la clase para ocultarla
             navbar.classList.remove("visible");
           }
         });
