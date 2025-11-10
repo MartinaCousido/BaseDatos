@@ -90,7 +90,9 @@ router.get('/buscar', async (req, res) => {
         const directorsData = await getPeopleForSearch(searchTerm, 'director');
 
         // Agregar posters a las películas
-        const moviesWithPosters = await addPostersToMovies(moviesData);
+        // const moviesWithPosters = await addPostersToMovies(moviesData);
+        // tengo que desactivar la busqueda de posters porque sino se tarda mucho
+        const moviesWithPosters = moviesData;
 
         res.render('resultado', { 
             toSearch: searchTerm,
@@ -113,8 +115,10 @@ router.get('/buscar/:genre', async (req, res) => {
         const response = await getMoviesByGenre(genreToSearch);
         
         // Agregar posters a las películas
-        const moviesWithPosters = await addPostersToMovies(response);
-        
+        // const moviesWithPosters = await addPostersToMovies(response);
+        // tengo que desactivar la busqueda de posters porque sino se tarda mucho
+        const moviesWithPosters = response;
+
         res.render('resultado', {
             toSearch: null,
             genre: genreToSearch,

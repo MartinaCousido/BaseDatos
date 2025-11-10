@@ -2,6 +2,28 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
+const { getMoviePoster } = require('../tmdb');
+
+// en el body deberia recibir el año y el titulo de la pelicula
+router.get('/pelicula/:title:year', async (req, res) => {
+    console.log(`Solicitud de poster para: ${title} (${year})`);
+    console.log(req.query)
+    const year = req.query.year;
+    const title = req.query.title;
+    try {
+        // deberia chequear la base de datos primero
+        // pero no esta implementado aun
+        getMoviePoster(title, year ? new Date(year).getFullYear() : null)
+            .then( url => {
+                res.json({ poster_url: url });
+            })
+            .catch( err => {poster_url = null; throw err;});
+    } catch (error) {
+        console.error('Error al obtener el poster de la película:', error);
+        res.status(500).send('Error al obtener el poster de la película');
+    }
+})
+
 // Ruta para la página de datos de una película particular (PostgreSQL)
 router.get('/pelicula/:id', async (req, res) => {
     const movieId = req.params.id;

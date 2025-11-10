@@ -5,11 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MovieWeb</title>
     <link rel="stylesheet" href="\css\index.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
       // Espera a que la página se cargue
       window.addEventListener("DOMContentLoaded", (event) => {
         const navbar = document.querySelector(".navbar");
+        const movies = <%- JSON.stringify(movies) %>;
 
+        if (movies && movies.length > 0) {
+          movies.forEach((movie) => {
+            const imgElement = document.querySelector(
+              `.result-card[href="/pelicula/${movie.movie_id}"] .card-img`
+            );
+
+            console.log({
+                title: movie.title,
+                year: movie.release_date
+              })
+
+            axios({
+              method: 'GET',
+              url: '/pelicula/poster/',
+              params: {
+                title: movie.title,
+                year: movie.release_date
+              }
+            })
+            .then(response => {
+              imgElement.src = response.data.poster_url;
+              console.log("Poster obtenido para", movie.title, ":", response.data.poster_url);
+            })
+            .catch(error => {
+              console.error("Error al obtener el poster:", error);
+            });
+
+          });
+        }
         // Escucha el evento de scroll en la ventana
         window.addEventListener("scroll", () => {
           // Si el scroll vertical es mayor a 50 píxeles...
@@ -46,7 +77,7 @@
       <div class="results-popularity">
       <% movies.forEach((movie, index) => { %>
       <a href="/pelicula/<%= movie.movie_id %>" class="result-card">
-        <img class="card-img" src="<%= movie.poster_url %>" alt="<%= movie.title %>" />
+        <img class="card-img" id="img-place-holder" src="/imgs/poster.jpg" alt="<%= movie.title %>" />
         <div class="card-info">
           <h3 class="card-title"><%= movie.title %></h3>
           <span class="card-popularity">#<%= index + 1%></span>

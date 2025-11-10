@@ -13,24 +13,8 @@ router.get('/', async (req, res) => {
             LIMIT 8
         `);
         
-        console.log('Películas obtenidas:', response.rows.length);
-        
-        // Obtener posters para cada película
-        const moviesWithPosters = await Promise.all(
-            response.rows.map(async (movie) => {
-                const year = movie.release_date ? new Date(movie.release_date).getFullYear() : null;
-                console.log(`Buscando poster para: ${movie.title} (${year})`);
-                const posterUrl = await getMoviePoster(movie.title, year);
-                console.log(`Poster URL: ${posterUrl}`);
-                return {
-                    ...movie,
-                    poster_url: posterUrl || '/imgs/poster.jpg'
-                };
-            })
-        );
-        
-        console.log('Películas con posters:', moviesWithPosters.length);
-        res.render('index', { movies: moviesWithPosters });
+        // tengo que obtener los posters de las pelis luego de renderizar
+        res.render('index', { movies: response.rows});
     } catch(error) {
         console.log('ERROR:', error);
         res.render('index', { movies: [] });
