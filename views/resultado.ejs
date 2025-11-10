@@ -1,36 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Resultado de la Búsqueda</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="/css/styles.css" />
-  </head>
-  <body class="page-content">
+</head>
+
+<body class="page-content">
     <%- include('common/navbar.ejs', toSearch) -%>
 
-    <div class="tabs-container">
-      <div class="tab-nav">
-        <button class="tab-button" data-tab="peliculas">Películas</button>
-        <button class="tab-button" data-tab="actores">Actores</button>
-        <button class="tab-button" data-tab="directores">Directores</button>
-      </div>
+        <div class="tabs-container">
+            <div class="tab-nav">
+                <button class="tab-button" data-tab="peliculas">Películas</button>
+                <button class="tab-button" data-tab="actores">Actores</button>
+                <button class="tab-button" data-tab="directores">Directores</button>
+            </div>
 
-      <div class="tab-content">
-        <div id="peliculas-panel" class="tab-panel">
-          <div class="results-grid" id="movies-grid"></div>
-          <div class="pagination" id="movies-pagination"></div>
+            <div class="tab-content">
+                <div id="peliculas-panel" class="tab-panel">
+                    <div class="results-grid" id="movies-grid"></div>
+                    <div class="pagination" id="movies-pagination"></div>
+                </div>
+                <div id="actores-panel" class="tab-panel">
+                    <div class="results-grid" id="actors-grid"></div>
+                    <div class="pagination" id="actors-pagination"></div>
+                </div>
+                <div id="directores-panel" class="tab-panel">
+                    <div class="results-grid" id="directors-grid"></div>
+                    <div class="pagination" id="directors-pagination"></div>
+                </div>
+            </div>
         </div>
-        <div id="actores-panel" class="tab-panel">
-          <div class="results-grid" id="actors-grid"></div>
-          <div class="pagination" id="actors-pagination"></div>
-        </div>
-        <div id="directores-panel" class="tab-panel">
-          <div class="results-grid" id="directors-grid"></div>
-          <div class="pagination" id="directors-pagination"></div>
-        </div>
-      </div>
-    </div>
 
-    <script>
+        <script>
+
             document.addEventListener('DOMContentLoaded', () => {
                 // --- 1. OBTENER TODOS LOS DATOS DEL SERVIDOR ---
                 const allMovies = <%- JSON.stringify(movies) %>;
@@ -46,7 +49,33 @@
                     directores: { data: allDirectors, currentPage: 1, grid: document.getElementById('directors-grid'), pag: document.getElementById('directors-pagination') },
                     genre: genre
                 };
+            async function setPosters(movies) {
+                console.log(movies.length)
+                if (movies && movies.length > 0) {
+                    movies.forEach((movie) => {
+                        const imgElement = document.querySelector(
+                            `.result-card[href="/pelicula/${movie.movie_id}"] .card-img`
+                        );
 
+                        axios({
+                            method: 'GET',
+                            url: '/pelicula/poster/',
+                            params: {
+                                title: movie.title,
+                                year: movie.release_date
+                            }
+                        })
+                            .then(response => {
+                                if (response.data.poster_url) imgElement.src = response.data.poster_url;
+                                console.log("Poster obtenido para", movie.title, ":", response.data.poster_url);
+                            })
+                            .catch(error => {
+                                console.error("Error al obtener el poster:", error);
+                            });
+
+                    });
+                }
+            }
                 // --- 3. FUNCIÓN PRINCIPAL PARA RENDERIZAR LA VISTA ---
                 function render() {
                     const tab = state[state.activeTab];
@@ -73,23 +102,24 @@
                             const genreSpan = state.genre ? `<span>${state.genre}</span>` : '';
                             const relacionadoSpan = item.priority === 3 ? '<span>Relacionado</span>' : '';
                             cardHTML = `
-                                <a href="/pelicula/${item.movie_id}" class="result-card">
-                                    <img class="card-img" src="${item.poster_url || '/imgs/poster.jpg'}"/>
-                                    <div class="card-info">
-                                        <h3 class="card-title">${item.title}</h3>
-                                        ${relacionadoSpan}
-                                        ${genreSpan}
-                                    </div>
-                                </a>`;
+                              <a href="/pelicula/${item.movie_id}" class="result-card">
+                                  <img class="card-img" src="${item.poster_url || '/imgs/poster.jpg'}"/>
+                                  <div class="card-info">
+                                      <h3 class="card-title">${item.title}</h3>
+                                      ${relacionadoSpan}
+                                      ${genreSpan}
+                                  </div>
+                              </a>`;
+                              
                         } else {
                             const personType = state.activeTab === 'actores' ? 'actor' : 'director';
                             cardHTML = `
-                                <a href="/${personType}/${item.person_id}" class="result-card">
-                                    <img class="card-img" src="/imgs/Tom_Hanks.jpg"/>
-                                    <div class="card-info">
-                                        <h3 class="card-title">${item.person_name}</h3>
-                                    </div>
-                                </a>`;
+                              <a href="/${personType}/${item.person_id}" class="result-card">
+                                  <img class="card-img" src="/imgs/Tom_Hanks.jpg"/>
+                                  <div class="card-info">
+                                      <h3 class="card-title">${item.person_name}</h3>
+                                  </div>
+                              </a>`;
                         }
                         tab.grid.innerHTML += cardHTML;
                     }
@@ -108,6 +138,7 @@
 
                         tab.pag.innerHTML += `<button class="page-link ${tab.currentPage >= totalPages ? 'disabled' : ''}" data-page="${tab.currentPage + 1}">>></button>`;
                     }
+                    if (state.activeTab == 'peliculas') setPosters(paginatedItems);
                 }
 
                 // --- 4. MANEJO DE EVENTOS ---
@@ -118,7 +149,7 @@
                     button.addEventListener('click', () => {
                         state.activeTab = button.dataset.tab;
                         state[state.activeTab].currentPage = 1;
-
+                        
                         tabButtons.forEach(btn => btn.classList.remove('active'));
                         tabPanels.forEach(panel => panel.classList.remove('active'));
                         button.classList.add('active');
@@ -133,6 +164,8 @@
                         state[state.activeTab].currentPage = page;
                         render();
                     }
+                    console.log(window.scrollY)
+                    window.scrollTo({top: 0, behavior:"smooth"});
                 });
 
                 // --- 5. RENDERIZADO INICIAL ---
@@ -154,6 +187,7 @@
                 // Activar la pestaña determinada y renderizar
                 document.querySelector(`.tab-button[data-tab="${initialTab}"]`).click();
             });
-    </script>
-  </body>
+        </script>
+</body>
+
 </html>

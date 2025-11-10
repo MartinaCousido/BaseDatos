@@ -88,16 +88,11 @@ router.get('/buscar', async (req, res) => {
         const moviesData = await getMoviesForSearch(searchTerm);
         const actorsData = await getPeopleForSearch(searchTerm, 'actor');
         const directorsData = await getPeopleForSearch(searchTerm, 'director');
-
-        // Agregar posters a las películas
-        // const moviesWithPosters = await addPostersToMovies(moviesData);
-        // tengo que desactivar la busqueda de posters porque sino se tarda mucho
-        const moviesWithPosters = moviesData;
-
+        res.setHeader('Cache-Control', 'public, max-age=3600');
         res.render('resultado', { 
             toSearch: searchTerm,
             genre: null,
-            movies: moviesWithPosters,
+            movies: moviesData,
             actors: actorsData,
             directors: directorsData,
         });
@@ -114,15 +109,10 @@ router.get('/buscar/:genre', async (req, res) => {
     try {
         const response = await getMoviesByGenre(genreToSearch);
         
-        // Agregar posters a las películas
-        // const moviesWithPosters = await addPostersToMovies(response);
-        // tengo que desactivar la busqueda de posters porque sino se tarda mucho
-        const moviesWithPosters = response;
-
         res.render('resultado', {
             toSearch: null,
             genre: genreToSearch,
-            movies: moviesWithPosters,
+            movies: response,
             actors: [],
             directors: []
         });

@@ -6,11 +6,11 @@ const { getMoviePoster } = require('../tmdb');
 
 // en el body deberia recibir el año y el titulo de la pelicula
 router.get('/pelicula/:title:year', async (req, res) => {
-    console.log(`Solicitud de poster para: ${title} (${year})`);
     console.log(req.query)
     const year = req.query.year;
     const title = req.query.title;
     try {
+        res.setHeader('Cache-Control', 'public, max-age=3600');
         // deberia chequear la base de datos primero
         // pero no esta implementado aun
         getMoviePoster(title, year ? new Date(year).getFullYear() : null)
