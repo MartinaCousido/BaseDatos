@@ -6,11 +6,19 @@
     <title><%= actorName %> - Actor</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
         .actor-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 5% 10%;
-            min-height: 100vh;
+            flex: 1; /* Esto empuja el footer al fondo */
         }
 
         .actor-hero {
@@ -167,6 +175,13 @@
             }
         }
     </style>
+    <script>
+        async function getLink() {
+            return await fetch('/actor/<%= actorId %>/photos')
+            .then(res => res.json()).catch(err => console.error(err));
+        }
+        console.log(getLink());
+    </script>
 </head>
 <body>
     <%- include('common/navbar.ejs', { toSearch: actorName }) -%>
@@ -205,5 +220,11 @@
             <a href="/" class="back-link"> Volver al inicio</a>
         </div>
     </div>
+
+
+    <%- include('common/footer.ejs') -%>
+
+    
 </body>
+
 </html>

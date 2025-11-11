@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { getMoviePoster } = require('../tmdb');
+const { getMoviePoster, getPersonPhoto } = require('../tmdb');
 
 async function getMoviesByGenre(genre) {
     try {
@@ -88,13 +88,17 @@ router.get('/buscar', async (req, res) => {
         const moviesData = await getMoviesForSearch(searchTerm);
         const actorsData = await getPeopleForSearch(searchTerm, 'actor');
         const directorsData = await getPeopleForSearch(searchTerm, 'director');
+      
+        const actorsWithPhotos = await addPhotosToPersons(actorsData);
+        const directorsWithPhotos = await addPhotosToPersons(directorsData);
+      
         res.setHeader('Cache-Control', 'public, max-age=3600');
         res.render('resultado', { 
             toSearch: searchTerm,
             genre: null,
             movies: moviesData,
-            actors: actorsData,
-            directors: directorsData,
+            actors: actorsWithPhotos,
+            directors: directorsWithPhotos
         });
 
     } catch (err) {
@@ -121,5 +125,17 @@ router.get('/buscar/:genre', async (req, res) => {
         res.status(500).send('Error en la búsqueda.');
     }
 });
+
+async function addPhotosToPersons(persons) {
+    return await Promise.all(
+        persons.map(async (person) => {
+            const photoUrl = await getPersonPhoto(person.person_name);
+            return {
+                ...person,
+                photo_url: photoUrl || '/imgs/Tom_Hanks.jpg'
+            };
+        })
+    );
+}
 
 module.exports = router;

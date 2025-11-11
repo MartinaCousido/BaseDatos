@@ -51,7 +51,7 @@
 
     <header class="hero">
       <div class="hero-content">
-        <h1>ScreenHub</h1>
+        <h1>MovieWeb</h1>
         <form action="/buscar" method="GET">
           <input
             type="text"
@@ -77,5 +77,23 @@
       <% }); %>
     </div>
     </main>
-  </body>
 </html>
+
+<nav class="navbar">
+  <div class="nav-container">
+      <a href="/" class="nav-brand">MovieWeb</a>
+      
+      <div class="nav-filters">
+          <a href="/accion">Acción</a>
+          <a href="/comedia">Comedia</a>
+          <a href="/drama">Drama</a>
+          <a href="/terror">Terror</a>
+      </div>
+      
+      <!-- ✅ Agrega este div con la clase nav-auth -->
+      <div class="nav-auth">
+          <a href="/login">Iniciar sesión</a>
+          <a href="/register">Registrarse</a>
+      </div>
+  </div>
+</nav>

@@ -31,6 +31,8 @@
                 </div>
             </div>
         </div>
+      </div>
+    </div>
 
         <script>
 
@@ -123,21 +125,22 @@
                         }
                         tab.grid.innerHTML += cardHTML;
                     }
-
-                    // Renderizar los controles de paginación
-                    if (totalPages > 1) {
-                        tab.pag.innerHTML += `<button class="page-link ${tab.currentPage === 1 ? 'disabled' : ''}" data-page="${tab.currentPage - 1}"><<</button>`;
-
-                        if (totalPages > 10) {
-                            tab.pag.innerHTML += `<span class="page-info">Página ${tab.currentPage} de ${totalPages}</span>`;
-                        } else {
-                            for (let i = 1; i <= totalPages; i++) {
-                                tab.pag.innerHTML += `<button class="page-link ${i === tab.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
-                            }
+                    tab.grid.innerHTML += cardHTML;
+                }
+    
+                // Renderizar los controles de paginación
+                if (totalPages > 1) {
+                    tab.pag.innerHTML += '<button class="page-link ' + (tab.currentPage === 1 ? 'disabled' : '') + '" data-page="' + (tab.currentPage - 1) + '"><<</button>';
+    
+                    if (totalPages > 10) {
+                        tab.pag.innerHTML += '<span class="page-info">Página ' + tab.currentPage + ' de ' + totalPages + '</span>';
+                    } else {
+                        for (let i = 1; i <= totalPages; i++) {
+                            tab.pag.innerHTML += '<button class="page-link ' + (i === tab.currentPage ? 'active' : '') + '" data-page="' + i + '">' + i + '</button>';
                         }
-
-                        tab.pag.innerHTML += `<button class="page-link ${tab.currentPage >= totalPages ? 'disabled' : ''}" data-page="${tab.currentPage + 1}">>></button>`;
-                    }
+                    }                   
+                   
+                    tab.pag.innerHTML += '<button class="page-link ' + (tab.currentPage >= totalPages ? 'disabled' : '') + '" data-page="' + (tab.currentPage + 1) + '">>></button>';
                     if (state.activeTab == 'peliculas') setPosters(paginatedItems);
                 }
 
@@ -183,11 +186,9 @@
                 if (allMovies.length === 0 && allActors.length === 0) {
                     initialTab = 'directores'; // Si tampoco hay actores, probamos con directores
                 }
-
-                // Activar la pestaña determinada y renderizar
-                document.querySelector(`.tab-button[data-tab="${initialTab}"]`).click();
             });
-        </script>
-</body>
 
+    </script>
+    <%- include('common/footer.ejs') -%>
+  </body>
 </html>
