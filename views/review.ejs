@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Escribir reseña - <%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    .review-wrapper { max-width: 700px; margin: 40px auto; background:#1a1a1a; padding:24px; border-radius:12px; border:2px solid #333; }
+    .review-wrapper h1 { color:#ffd700; margin-top:0; }
+    .review-wrapper label { color:#fff; display:block; margin:14px 0 6px; }
+    .review-wrapper select, .review-wrapper textarea { width:100%; padding:10px; border-radius:8px; border:1px solid #555; background:#2a2a2a; color:#fff; }
+    .review-actions { margin-top:18px; display:flex; gap:12px; }
+    .btn { display:inline-block; background:#ffd700; color:#1a1a1a; padding:12px 20px; border-radius:10px; text-decoration:none; font-weight:700; }
+    .btn.secondary { background:#2a2a2a; color:#ffd700; border:2px solid #ffd700; }
+  </style>
+</head>
+<body>
+  <%- include('common/navbar.ejs', { toSearch: null }) -%>
+
+  <div class="review-wrapper">
+    <h1><%= title %></h1>
+    <form method="POST" action="/pelicula/<%= movieId %>/review">
+      <label for="rating">Tu rating</label>
+      <select id="rating" name="rating" required>
+        <option value="">Selecciona…</option>
+        <option value="5">★★★★★ (5)</option>
+        <option value="4">★★★★☆ (4)</option>
+        <option value="3">★★★☆☆ (3)</option>
+        <option value="2">★★☆☆☆ (2)</option>
+        <option value="1">★☆☆☆☆ (1)</option>
+      </select>
+
+      <label for="reviewText">Tu reseña (opcional)</label>
+      <textarea id="reviewText" name="reviewText" rows="6" placeholder="Escribe tu reseña…"></textarea>
+
+      <div class="review-actions">
+        <button class="btn" type="submit">Guardar</button>
+        <a class="btn secondary" href="/pelicula/<%= movieId %>">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+  <%- include('common/footer.ejs') -%>
+</body>
+</html>

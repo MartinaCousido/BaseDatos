@@ -4,6 +4,8 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3500;
 const cookieParser = require('cookie-parser');
+const feedRoutes = require("./routes/feed");
+const reviewRoutes = require("./routes/reviews");
 
 app.set('view engine', 'ejs');
 
@@ -12,6 +14,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('views'));
 app.use(express.static('public'));
+app.use(feedRoutes);
+app.use(reviewRoutes);
 
 const indexRoutes = require('./routes/index');
 const searchRoutes = require('./routes/results');
@@ -21,6 +25,8 @@ const directorRoutes = require('./routes/director');
 const loginRoutes = require('./routes/login');
 const registerRoutes = require('./routes/register')
 const profileRoutes = require('./routes/profile');
+
+
 
 app.use([
     indexRoutes,
