@@ -52,7 +52,6 @@
                     genre: genre
                 };
             async function setPosters(movies) {
-                console.log(movies.length)
                 if (movies && movies.length > 0) {
                     movies.forEach((movie) => {
                         const imgElement = document.querySelector(
@@ -61,7 +60,7 @@
 
                         axios({
                             method: 'GET',
-                            url: '/pelicula/poster/',
+                            url: '/pelicula/poster',
                             params: {
                                 title: movie.title,
                                 year: movie.release_date
@@ -125,8 +124,6 @@
                         }
                         tab.grid.innerHTML += cardHTML;
                     }
-                    tab.grid.innerHTML += cardHTML;
-                }
     
                 // Renderizar los controles de paginación
                 if (totalPages > 1) {
@@ -138,9 +135,10 @@
                         for (let i = 1; i <= totalPages; i++) {
                             tab.pag.innerHTML += '<button class="page-link ' + (i === tab.currentPage ? 'active' : '') + '" data-page="' + i + '">' + i + '</button>';
                         }
-                    }                   
+                    }
                    
-                    tab.pag.innerHTML += '<button class="page-link ' + (tab.currentPage >= totalPages ? 'disabled' : '') + '" data-page="' + (tab.currentPage + 1) + '">>></button>';
+                        tab.pag.innerHTML += '<button class="page-link ' + (tab.currentPage >= totalPages ? 'disabled' : '') + '" data-page="' + (tab.currentPage + 1) + '">>></button>';
+                    }
                     if (state.activeTab == 'peliculas') setPosters(paginatedItems);
                 }
 
@@ -167,7 +165,6 @@
                         state[state.activeTab].currentPage = page;
                         render();
                     }
-                    console.log(window.scrollY)
                     window.scrollTo({top: 0, behavior:"smooth"});
                 });
 
@@ -186,6 +183,7 @@
                 if (allMovies.length === 0 && allActors.length === 0) {
                     initialTab = 'directores'; // Si tampoco hay actores, probamos con directores
                 }
+                document.querySelector('.tab-button[data-tab="' + initialTab + '"]').click();
             });
 
     </script>

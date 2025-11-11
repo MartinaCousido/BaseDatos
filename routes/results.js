@@ -89,16 +89,16 @@ router.get('/buscar', async (req, res) => {
         const actorsData = await getPeopleForSearch(searchTerm, 'actor');
         const directorsData = await getPeopleForSearch(searchTerm, 'director');
       
-        const actorsWithPhotos = await addPhotosToPersons(actorsData);
-        const directorsWithPhotos = await addPhotosToPersons(directorsData);
+        // const actorsWithPhotos = await addPhotosToPersons(actorsData);
+        // const directorsWithPhotos = await addPhotosToPersons(directorsData);
       
         res.setHeader('Cache-Control', 'public, max-age=3600');
         res.render('resultado', { 
             toSearch: searchTerm,
             genre: null,
             movies: moviesData,
-            actors: actorsWithPhotos,
-            directors: directorsWithPhotos
+            actors: actorsData,
+            directors: directorsData
         });
 
     } catch (err) {

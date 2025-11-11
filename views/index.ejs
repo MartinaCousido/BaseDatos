@@ -19,7 +19,7 @@
 
             axios({
               method: 'GET',
-              url: '/pelicula/poster/',
+              url: '/pelicula/poster',
               params: {
                 title: movie.title,
                 year: movie.release_date
@@ -77,23 +77,7 @@
       <% }); %>
     </div>
     </main>
-</html>
 
-<nav class="navbar">
-  <div class="nav-container">
-      <a href="/" class="nav-brand">MovieWeb</a>
-      
-      <div class="nav-filters">
-          <a href="/accion">Acción</a>
-          <a href="/comedia">Comedia</a>
-          <a href="/drama">Drama</a>
-          <a href="/terror">Terror</a>
-      </div>
-      
-      <!-- ✅ Agrega este div con la clase nav-auth -->
-      <div class="nav-auth">
-          <a href="/login">Iniciar sesión</a>
-          <a href="/register">Registrarse</a>
-      </div>
-  </div>
-</nav>
+    <%- include('common/footer.ejs') -%>
+  </body>
+</html>
