@@ -17,6 +17,10 @@ app.use(express.static('public'));
 app.use(feedRoutes);
 app.use(reviewRoutes);
 
+app.get('/favicon.ico', (req, res) => {
+    res.sendFile('/public/favicon.ico');
+});
+
 const indexRoutes = require('./routes/index');
 const searchRoutes = require('./routes/results');
 const movieRoutes = require('./routes/movies');
