@@ -5,8 +5,9 @@ function authenticate(req, res, next) {
   try {
     // ejemplo: token en cookie "token" o header Authorization: Bearer <token>
     const raw =
-      (req.cookies && req.cookies.token) ||
+      (req.cookies && req.cookies.access_token) ||
       (req.headers.authorization && req.headers.authorization.split(" ")[1]);
+
 
     if (!raw) return res.status(401).json({ ok: false, error: "missing token" });
 

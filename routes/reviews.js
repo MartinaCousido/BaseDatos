@@ -45,36 +45,107 @@ router.post("/pelicula/:movieId/review", ensureAuthRedirect, async (req, res, ne
     const movieId = Number(req.params.movieId);
     const { rating, reviewText } = req.body;
 
-    // 1) Guarda en SQL (ajusta a tu diseño real)
-    // rating (upsert) — ejemplo:
+    // 1) Guarda / actualiza el rating en SQL
     await db.query(`
-        INSERT INTO user_likes_movie (user_id, movie_id, rating)
+      INSERT INTO users.user_movie_likes (user_id, movie_id, rating)
+      VALUES ($1,$2,$3)
+      ON CONFLICT (user_id, movie_id) DO UPDATE SET rating = EXCLUDED.rating
+    `, [uid, movieId, rating]);
+
+    // 2) Guarda la reseña en SQL (si escribió algo)
+    if (reviewText && reviewText.trim().length) {
+      await db.query(`
+        INSERT INTO users.movie_reviews (user_id, movie_id, content)
         VALUES ($1,$2,$3)
-        ON CONFLICT (user_id, movie_id) DO UPDATE SET rating = EXCLUDED.rating
-      `, [uid, movieId, rating]);
+      `, [uid, movieId, reviewText.trim()]);
+    }
 
-    // review — ejemplo mínimo (crea tu tabla si aún no la tienes)
-    // const rv = await db.query(
-    //   'INSERT INTO review (user_id, movie_id, content) VALUES ($1,$2,$3) RETURNING review_id',
-    //   [uid, movieId, reviewText]
-    // );
-    // const reviewId = rv.rows[0].review_id;
-
-    // 2) Trae el título de SQL para denormalizar a Mongo
-    const t = await db.query('SELECT title FROM movie WHERE movie_id = $1', [movieId]);
+    // 3) Obtiene el título para logear en Mongo (feed)
+    const t = await db.query(
+      'SELECT title FROM movie WHERE movie_id = $1',
+      [movieId]
+    );
     const movieTitle = t.rows[0]?.title || 'Película';
 
-    // 3) Log en Mongo (feed)
+    // 4) Log en Mongo (actividad) - opcional, esto es solo para el feed
     if (rating) {
-      await onRatedMovie({ userId: uid, movieId, movieTitle, rating: Number(rating) });
-    }
-    if (reviewText && reviewText.trim().length) {
-      // si implementas review real en SQL, usa su reviewId real
-      await onWroteReview({ userId: uid, movieId, movieTitle, reviewId: `tmp-${uid}-${movieId}` });
+      await onRatedMovie({
+        userId: uid,
+        movieId,
+        movieTitle,
+        rating: Number(rating)
+      });
     }
 
-    // 4) Redirige al detalle de la película
+    if (reviewText && reviewText.trim().length) {
+      await onWroteReview({
+        userId: uid,
+        movieId,
+        movieTitle,
+        reviewId: `tmp-${uid}-${movieId}`
+      });
+    }
+
+    // 5) Redirige de vuelta al detalle de la peli
     return res.redirect(`/pelicula/${movieId}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Helpers para "hace 2 horas", "hace 3 días", etc.
+function timeAgo(date) {
+  if (!date) return "";
+  const diffMs = Date.now() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHrs = Math.floor(diffMin / 60);
+  const diffDays = Math.floor(diffHrs / 24);
+
+  if (diffSec < 60) return "hace unos segundos";
+  if (diffMin < 60) return `hace ${diffMin} minuto${diffMin === 1 ? "" : "s"}`;
+  if (diffHrs < 24) return `hace ${diffHrs} hora${diffHrs === 1 ? "" : "s"}`;
+  return `hace ${diffDays} día${diffDays === 1 ? "" : "s"}`;
+}
+
+// GET: ver ratings + reseñas de todos los usuarios para una película
+router.get("/pelicula/:movieId/resenas", async (req, res, next) => {
+  try {
+    const movieId = Number(req.params.movieId);
+
+    // Título de la película
+    const movieResult = await db.query(
+      "SELECT title FROM movie WHERE movie_id = $1",
+      [movieId]
+    );
+    const title = movieResult.rows[0]?.title || "Película";
+
+    // Traer username, rating y reseña
+    const reviewsResult = await db.query(`
+      SELECT 
+        u.username,
+        l.rating,
+        r.content,
+        r.created_at
+      FROM users.movie_reviews r
+      JOIN users.user_movie_likes l
+        ON l.user_id = r.user_id AND l.movie_id = r.movie_id
+      JOIN users."user" u
+        ON u.user_id = r.user_id
+      WHERE r.movie_id = $1
+      ORDER BY r.created_at DESC;
+    `, [movieId]);
+
+    const reviews = reviewsResult.rows.map(row => ({
+      ...row,
+      timeAgo: row.created_at ? timeAgo(row.created_at) : null
+    }));
+
+    return res.render("movie_reviews", {
+      movieId,
+      title,
+      reviews
+    });
   } catch (err) {
     next(err);
   }
