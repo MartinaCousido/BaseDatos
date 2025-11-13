@@ -104,6 +104,7 @@
             }
             // --- 3. FUNCIÓN PRINCIPAL PARA RENDERIZAR LA VISTA ---
             function render() {
+                window.scrollTo(0, 0);
                 const tab = state[state.activeTab];
                 const totalPages = Math.ceil(tab.data.length / resultsPerPage);
                 // Limpiar contenedores
@@ -114,54 +115,55 @@
                     tab.grid.innerHTML = `<p class="no-results">No se encontraron ${state.activeTab}.</p>`;
                     return;
                 }
+
                 // Renderizar la grilla de resultados para la página actual
                 const start = (tab.currentPage - 1) * resultsPerPage;
                 const end = start + resultsPerPage;
                 const paginatedItems = tab.data.slice(start, end);
+
                 for (const item of paginatedItems) {
                     let cardHTML = '';
                     if (state.activeTab === 'peliculas') {
                         const genreSpan = state.genre ? `<span>${state.genre}</span>` : '';
                         const relacionadoSpan = item.priority === 3 ? '<span>Relacionado</span>' : '';
                         cardHTML = `
-                          <a href="/pelicula/${item.movie_id}" class="result-card">
-                              <img class="card-img" src="${item.poster_url || '/imgs/poster.jpg'}"/>
-                              <div class="card-info">
-                                  <h3 class="card-title">${item.title}</h3>
-                                  ${relacionadoSpan}
-                                  ${genreSpan}
-                              </div>
-                          </a>`;
-                          
-                    } else {
-                        const personType = state.activeTab === 'actores' ? 'actor' : 'director';
-                        cardHTML = `
-                          <a href="/${personType}/${item.person_id}" class="result-card">
-                              <img class="card-img" src="/imgs/poster.jpg"/>
-                              <div class="card-info">
-                                  <h3 class="card-title">${item.person_name}</h3>
-                              </div>
-                          </a>`;
+                            <a href="/pelicula/${item.movie_id}" class="result-card">
+                                <img class="card-img" src="${item.poster_url || '/imgs/poster.jpg'}"/>
+                                <div class="card-info">
+                                    <h3 class="card-title">${item.title}</h3>
+                                    ${relacionadoSpan}
+                                    ${genreSpan}
+                                </div>
+                            </a>`;
+                        } else {
+                            const personType = state.activeTab === 'actores' ? 'actor' : 'director';
+                            cardHTML = `
+                            <a href="/${personType}/${item.person_id}" class="result-card">
+                                <img class="card-img" src="/imgs/poster.jpg"/>
+                                <div class="card-info">
+                                    <h3 class="card-title">${item.person_name}</h3>
+                                </div>
+                            </a>`;
+                        }
+                        tab.grid.innerHTML += cardHTML;
                     }
-                    tab.grid.innerHTML += cardHTML;
-                }
     
-                // Renderizar los controles de paginación
-                if (totalPages > 1) {
-                    tab.pag.innerHTML += '<button class="page-link ' + (tab.currentPage === 1 ? 'disabled' : '') + '" data-page="' + (tab.currentPage - 1) + '"><<</button>';
+                    // Renderizar los controles de paginación
+                    if (totalPages > 1) {
+                        tab.pag.innerHTML += '<button class="page-link ' + (tab.currentPage === 1 ? 'disabled' : '') + '" data-page="' + (tab.currentPage - 1) + '"><<</button>';
     
-                    if (totalPages > 10) {
-                        tab.pag.innerHTML += '<span class="page-info">Página ' + tab.currentPage + ' de ' + totalPages + '</span>';
-                    } else {
-                        for (let i = 1; i <= totalPages; i++) 
+                        if (totalPages > 10) {
+                            tab.pag.innerHTML += '<span class="page-info">Página ' + tab.currentPage + ' de ' + totalPages + '</span>';
+                        } else {
+                            for (let i = 1; i <= totalPages; i++) 
                             tab.pag.innerHTML += '<button class="page-link ' + (i === tab.currentPage ? 'active' : '') + '" data-page="' + i + '">' + i + '</button>';
-                    }
-                   
+                        }
                         tab.pag.innerHTML += '<button class="page-link ' + (tab.currentPage >= totalPages ? 'disabled' : '') + '" data-page="' + (tab.currentPage + 1) + '">>></button>';
                     }
 
                     if (state.activeTab == 'peliculas') setPosters(paginatedItems);
                     else setPhotos(paginatedItems);
+
                 }
 
                 // --- 4. MANEJO DE EVENTOS ---
@@ -187,7 +189,6 @@
                         state[state.activeTab].currentPage = page;
                         render();
                     }
-                    window.scrollTo({top: 0, behavior:"smooth"});
                 });
 
                 // --- 5. RENDERIZADO INICIAL ---
