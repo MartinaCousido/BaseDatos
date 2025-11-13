@@ -19,12 +19,10 @@
       position: relative;
       width: 50%;
       height: 100vh;
-      overflow: hidden;
       background-color: #2a2a2a;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px; /* Padding para el reborde */
       box-sizing: border-box;
     }
 
@@ -32,9 +30,6 @@
       position: relative;
       width: 100%;
       height: 100%;
-      border-radius: 20px; /* Bordes redondeados */
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); /* Sombra para profundidad */
     }
 
     .carousel-slide {
@@ -46,24 +41,35 @@
       background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
-      background-color: #2a2a2a;
       opacity: 0;
       transition: opacity 1.5s ease-in-out;
+      z-index: 10;
     }
 
     .carousel-slide.active {
       opacity: 1;
     }
 
+    .carousel-overlay.active {
+      opacity: 1;
+    }
+
     .carousel-overlay {
+      opacity: 0;
       position: absolute;
-      bottom: 0;
+      top: 0;
       left: 0;
-      right: 0;
-      background: transparent;
-      padding: 30px;
+      width: 100%;
+      height: 100%;
       color: white;
-      border-radius: 0 0 20px 20px;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      -webkit-filter: blur(15px);
+      -moz-filter: blur(15px);
+          filter: blur(15px);
+      transform: scale(1.3);
+      transition: opacity 1.8s ease-in-out;
     }
 
     .carousel-title {
@@ -294,21 +300,24 @@
         slide.style.backgroundImage = `url('${movie.poster_url}')`;
         
         const overlay = document.createElement('div');
-        overlay.className = 'carousel-overlay';
-        overlay.innerHTML = `<h3 class="carousel-title">${movie.title}</h3>`;
+        overlay.className = 'carousel-overlay' + (index === 0 ? ' active' : '');
+        overlay.style.backgroundImage = `url('${movie.poster_url}')`;
         
-        slide.appendChild(overlay);
         container.appendChild(slide);
+        container.appendChild(overlay);
       });
       
       // Cambiar slide cada 4 segundos
       let currentSlide = 0;
       const slides = document.querySelectorAll('.carousel-slide');
+      const overlay = document.querySelectorAll('.carousel-overlay');
       
       setInterval(() => {
+        overlay[currentSlide].classList.remove('active');
         slides[currentSlide].classList.remove('active');
         currentSlide = (currentSlide + 1) % slides.length;
         slides[currentSlide].classList.add('active');
+        overlay[currentSlide].classList.add('active');
       }, 4000);
       
     } catch (error) {
