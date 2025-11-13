@@ -6,10 +6,10 @@
     <link rel="stylesheet" href="/css/styles.css" />
 </head>
 
-<body class="page-content">
+<body>
     <%- include('common/navbar.ejs', toSearch) -%>
 
-        <div class="tabs-container">
+        <div class="tabs-container page-content">
             <div class="tab-nav">
                 <button class="tab-button" data-tab="peliculas">Películas</button>
                 <button class="tab-button" data-tab="actores">Actores</button>
@@ -31,8 +31,6 @@
                 </div>
             </div>
         </div>
-      </div>
-    </div>
 
         <script>
         document.addEventListener('DOMContentLoaded', () => {

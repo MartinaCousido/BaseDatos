@@ -32,7 +32,7 @@ li {
 
 /* === ESTILOS PARA EL CONTENIDO DE LAS PÁGINAS === */
 .page-content {
-    max-width: 100%;
+    max-width: 80%;
     padding: 3% 10%;
 }
 
@@ -475,8 +475,8 @@ footer {
   width: 100%;
   background-color: #0d0d0d;
   color: #d9d9d9;
-  padding: 40px 20px;
   font-family: Arial, sans-serif;
+  padding-top: 5%;
 }
 
 .footer-content {
@@ -527,13 +527,3 @@ html, body {
   flex: 1; /* hace que el contenido empuje el footer hacia abajo */
   padding: 5% 10%;
 }
-
-footer {
-  width: calc(100% + 40%); /* 100% + 10% padding de cada lado */
-  margin-left: -20%;
-  background-color: #0d0d0d;
-  color: #d9d9d9;
-  padding: 40px 20px;
-}
-
-
