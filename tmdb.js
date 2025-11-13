@@ -22,6 +22,7 @@ async function getMoviePoster(title, year) {
 
 async function getPersonPhoto(personName) {
     try {
+        console.log(personName)
         // Buscar la persona por nombre
         const searchUrl = `${TMDB_BASE_URL}/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(personName)}`;
         const response = await axios.get(searchUrl);

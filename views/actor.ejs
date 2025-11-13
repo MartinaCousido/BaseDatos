@@ -177,7 +177,10 @@
     </style>
     <script>
         async function getLink() {
-            return await fetch('/actor/<%= actorId %>/photos')
+            return await fetch('/actor/photo', {
+                method: "GET",
+                body: JSON.stringify({name: <% actorName %>})
+            })
             .then(res => res.json()).catch(err => console.error(err));
         }
         console.log(getLink());

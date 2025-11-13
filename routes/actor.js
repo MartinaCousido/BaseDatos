@@ -1,8 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const { getPersonPhoto } = require('../tmdb');
+
+router.get('/actor/photo', async (req, res) => {
+    const name = req.query.name;
+    try {
+        const photo_url = await getPersonPhoto(name);
+        console.log(photo_url);
+        res.json(photo_url);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al obtener las fotos del actor.');
+    }
+});
 
 router.get('/actor/:id', async (req, res) => {
+
     const actorId = req.params.id;
     try {
         // Consulta: obtener información completa del actor
@@ -56,24 +70,6 @@ router.get('/actor/:id', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('Error al obtener información del actor');
-    }
-});
-
-router.get('/actor/:id/photos', async (req, res) => {
-    const actorId = req.params.id;
-    try {
-        const actorResult = await db.query('SELECT person_name FROM person WHERE person_id = $1', [actorId]);
-        if (actorResult.rows.length === 0) {
-            return res.status(404).send('Actor no encontrado.');
-        }
-        const personName = actorResult.rows[0].person_name;
-
-        const { getPersonPhotos } = require('../tmdb');
-        const photos = await getPersonPhotos(personName);
-        res.json(photos);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error al obtener las fotos del actor.');
     }
 });
 

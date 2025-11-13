@@ -27,7 +27,6 @@
             })
             .then(response => {
               imgElement.src = response.data.poster_url;
-              console.log("Poster obtenido para", movie.title, ":", response.data.poster_url);
             })
             .catch(error => {
               console.error("Error al obtener el poster:", error);

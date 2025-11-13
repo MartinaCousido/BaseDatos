@@ -36,18 +36,14 @@ router.get('/api/popular-movies', async (req, res) => {
 
 // en el body deberia recibir el año y el titulo de la pelicula
 router.get('/pelicula/poster', async (req, res) => {
-    console.log(req.query)
     const title = req.query.title;
     const year = req.query.year;
     try {
         res.setHeader('Cache-Control', 'public, max-age=3600');
         // deberia chequear la base de datos primero
         // pero no esta implementado aun
-        getMoviePoster(title, year ? new Date(year).getFullYear() : null)
-            .then( url => {
-                res.json({ poster_url: url });
-            })
-            .catch( err => {poster_url = null; throw err;});
+        const response = await getMoviePoster(title, year ? new Date(year).getFullYear() : null);
+        res.status(200).json({poster_url: response});
     } catch (error) {
         console.error('Error al obtener el poster de la película:', error);
         res.status(500).send('Error al obtener el poster de la película');
