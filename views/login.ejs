@@ -277,8 +277,8 @@
             const data = await response.json().catch(() => ({}));
             if (response.ok) {
               // prefer not to store tokens in localStorage; store only minimal public user info if needed
-              window.localStorage.setItem('user', JSON.stringify(data.user || {}));
-              window.location = '/';
+              const next = new URLSearchParams(window.location.search).get('next');
+              window.location = next || '/';
             } else {
               inputs.forEach(i => i.style.borderColor = 'red');
               invalid.style.display = 'block';
